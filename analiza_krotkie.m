@@ -37,18 +37,4 @@ subplot(2,2,2); boxplot(general.L,round(data.sfe.fp,-1))
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(general.R,round(data.sfe.fp,-1))
 %xlabel('Frequency [Hz]')
-
-for p=1:2
-    ear = ears(2*p -1);
-    figure(p+1)
-    hold on
-    grid on
-    colorb = colorbar();
-    for i=1:n
-        scatter(1:l.(ear),ones(1,l.(ear)).*data.sfe.fp(i),[],general.(ear)(:,i), 'filled', 'MarkerEdgeColor', 'k')
-    end
-    title(['Quick SFOAE, "' ear '"' ' ear'])
-    xlabel('Number of trial')
-    ylabel('Frequency [Hz]');
-    colorb.Label.String = 'dP';
-end
+InterTrialPlot(n, general, data.sfe.fp, l)

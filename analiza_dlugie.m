@@ -44,18 +44,4 @@ subplot(2,2,2); boxplot(gen_mean.L,round(data.sfe.fclist,-1))
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1))
 %xlabel('Frequency [Hz]')
-
-for p=1:2
-    ear = ears(2*p -1);
-    figure(p+1)
-    hold on
-    grid on
-    colorb = colorbar();
-    for i=1:m
-        scatter(1:l.(ear),ones(1,l.(ear)).*data.sfe.fclist(i),[],gen_mean.(ear)(:,i), 'filled', 'MarkerEdgeColor', 'k')
-    end
-    title(['Long SFOAE, "' ear '"' ' ear'])
-    xlabel('Number of trial')
-    ylabel('Frequency [Hz]');
-    colorb.Label.String = 'Mean dP';
-end
+InterTrialPlot(m, gen_mean, data.sfe.fclist, l)
