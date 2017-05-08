@@ -1,6 +1,7 @@
 filename = 'dpoae_data_01.txt';
 fileID = fopen(filename);
 head_lines  = 9276;
+m = 6; %number of tested frequencies
 % C_data1 = textscan(fileID,['%q', '%*q', '%*q', ...
 %     repmat('%q',[1,3]), repmat('%*q',[1,7]),repmat('%q',[1,17]),'%*[^\n]'],...
 %     'HeaderLines',head_lines,'CollectOutput',1, 'Delimiter',',');
@@ -20,26 +21,23 @@ fclose(fileID);
 % DP5, DP6, MinDP (Minimum DPOAE level criterion in dB SPL) (26 column), MinSN, Good (28 column)( =1 if point passed)
 % GoodNF, Bad, Rej (31 column) ( =1 if point rejected), ArtRej, “RejNf ” — Noise level criterion in dB SPL for rejecting test point. 
 prep = @(x) str2num(char(strrep(x, ',','.')));
-f1s = data(1:6,5);
-f1s = str2num(char(strrep(f1s, ',','.')));
-f2s = data(1:6,6);
-f2s = str2num(char(strrep(f2s, ',','.')));
+f1s = prep(data(1:6,5));
+f2s = prep(data(1:6,6));
+
 DPfreqs = 2*f1s - f2s;
-DP1s.L = zeros(1,6);
-DP1s.R = zeros(1,6);
+DP1s.L = zeros(1,m);
+DP1s.R = zeros(1,m);
 EarCol = cell2mat(data(:,4));
 %l.L = sum(EarCol(:)=='L');
 %l.R = sum(EarCol(:)=='R');
 l.L = 1;
 l.R = 1;
-for i = 1: (idx2-1)/6
-    if strcmp(data(i*6-2 ,4),'L')
-        j = l.L;
-        DP1s.L(j,:) = prep(data((i-1)*6+1:i*6, 20));
+for i = 1: (idx2-1)/m
+    if strcmp(data(i*m-2 ,4),'L')
+        DP1s.L(l.L,:) = prep(data((i-1)*m+1:i*m, 20));
         l.L = l.L + 1;
-    elseif strcmp(data(i*6-2, 4),'R')
-        j = l.R;
-        DP1s.R(j,:) = prep(data((i-1)*6+1:i*6, 20));
+    elseif strcmp(data(i*m-2, 4),'R')
+        DP1s.R(l.R,:) = prep(data((i-1)*m+1:i*m, 20));
         l.R = l.R + 1;
     else
         disp('Wrong ear name');
@@ -49,16 +47,16 @@ end
 l.L =l.L-1;
 l.R = l.R-1;
 disp('check:')
-disp( sum(EarCol(:)=='L')/6 == l.L)
-disp( sum(EarCol(:)=='R')/6 == l.R)
+disp( sum(EarCol(:)=='L')/m == l.L)
+disp( sum(EarCol(:)=='R')/m == l.R)
 
 figure()
 subplot(2,1,1)
-plot(DPfreqs, DP1s.L)
-title('Left ear');
+plot(DPfreqs, DP1s.L); title('Left ear'); ylabel('DP1 [dB SPL]')
 subplot(2,1,2)
-plot(DPfreqs, DP1s.R)
-title('Right ear');
+plot(DPfreqs, DP1s.R); title('Right ear'); xlabel('Frequency [Hz]')
+ylabel('DP1 [dB SPL]')
 
-figure()
-InterTrialPlot(6, DP1s', DPfreqs, l, 'DPOAE')
+InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE')
+%RatioPlot(DPfreqs,DP1s)
+StdPlot(DPfreqs,DP1s, 'DPOAE')

@@ -62,3 +62,5 @@ for p=1:2
     ylabel('Frequency [Hz]');
     colorb.Label.String = 'dP(i) - dP(1)';
 end
+InterTrialPlot(n, general, data.sfe.fclist, l, 'Longest SFOAE')
+StdPlot(data.sfe.fclist, general, 'Long SFOAE')
