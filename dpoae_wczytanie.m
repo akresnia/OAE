@@ -1,6 +1,7 @@
-filename = 'dpoae_data_01.txt';
+filename = 'dpoae_data_Mikolaj.txt';
+name = 'Mikolaj';
 fileID = fopen(filename);
-head_lines  = 9276;
+head_lines  =5;% 4125; %9276;
 m = 6; %number of tested frequencies
 % C_data1 = textscan(fileID,['%q', '%*q', '%*q', ...
 %     repmat('%q',[1,3]), repmat('%*q',[1,7]),repmat('%q',[1,17]),'%*[^\n]'],...
@@ -11,7 +12,7 @@ C_data1 = textscan(fileID, repmat('%q',[1,52]),'HeaderLines',head_lines, 'Collec
 
 idx1 = find(strcmp(C_data1{1}, 'TestData'), 1, 'first');
 idx2 = find(strcmp(C_data1{1}, 'TestSession'), 1, 'first');
-data = C_data1{1}(1:idx2-1,:);
+data = C_data1{1}(idx1+1:idx2-1,:);
 fclose(fileID);
 % {“SessionID”, "MeasurementID", "PointerNo", "Ear","f1",
 % "f2", "TL1" (target f1 level),"TL2", "TA",  "ML1" (measured f1 level)
@@ -32,7 +33,7 @@ EarCol = cell2mat(data(:,4));
 %l.R = sum(EarCol(:)=='R');
 l.L = 1;
 l.R = 1;
-for i = 1: (idx2-1)/m
+for i = 1: (idx2-1 - (idx1))/m
     if strcmp(data(i*m-2 ,4),'L')
         DP1s.L(l.L,:) = prep(data((i-1)*m+1:i*m, 20));
         l.L = l.L + 1;
@@ -56,7 +57,8 @@ plot(DPfreqs, DP1s.L); title('Left ear'); ylabel('DP1 [dB SPL]')
 subplot(2,1,2)
 plot(DPfreqs, DP1s.R); title('Right ear'); xlabel('Frequency [Hz]')
 ylabel('DP1 [dB SPL]')
+print(['DP1_summary_' name], '-dpng', '-noui')
 
-InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE')
+InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE', name,1);
 %RatioPlot(DPfreqs,DP1s)
-StdPlot(DPfreqs,DP1s, 'DPOAE')
+StdPlot(DPfreqs,DP1s, 'DPOAE',name,1)

@@ -1,6 +1,6 @@
-directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
+function [a, b, c, short, long, longest] = wczytanie(directory_name)
+%directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 files = dir(fullfile(directory_name, '*_SFOAE_*.mat'));
-%fileIndex = find(~[files.isdir]);
 n = length(files);
 a=1;
 b=1;
@@ -11,7 +11,6 @@ longest = cell(n,4);
 
 for i = 1:length(files)
 fileName = files(i).name; 
-disp(fileName)
 A = load([directory_name fileName]);
 
 if A.cfg.uni_numf == 4
@@ -36,3 +35,4 @@ else
     disp('Unknown length!')
 end
 end
+clear A files n

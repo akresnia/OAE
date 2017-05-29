@@ -1,4 +1,9 @@
-wczytanie;
+%directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
+%when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
+%be compared
+directory_name = 'C:\Users\Alicja\Desktop\praca mgr\OAE Kasi K\';
+name = 'Kasia';
+wczytanie(directory_name);
 %a - 1 - # of short trials
 n = 4; %length(data.sfe.fp)
 general = zeros(1,n);
@@ -37,5 +42,5 @@ subplot(2,2,2); boxplot(general.L,round(data.sfe.fp,-1))
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(general.R,round(data.sfe.fp,-1))
 %xlabel('Frequency [Hz]')
-InterTrialPlot(n, general, data.sfe.fp, l, 'Short SFOAE')
-StdPlot(data.sfe.fp, general, 'Short SFOAE')
+InterTrialPlot(n, general, data.sfe.fp, l, 'Short SFOAE', name,0)
+StdPlot(data.sfe.fp, general, 'Short SFOAE',name,0)

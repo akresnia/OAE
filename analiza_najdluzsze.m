@@ -1,4 +1,6 @@
-wczytanie;
+directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
+wczytanie(directory_name);
+name = 'Ala';
 %c - 1 - # of the longest trials
 n = 60; %length(data.sfe.fp)
 %m = 5; %length(data.sfe.fclist)
@@ -62,5 +64,5 @@ for p=1:2
     ylabel('Frequency [Hz]');
     colorb.Label.String = 'dP(i) - dP(1)';
 end
-InterTrialPlot(n, general, data.sfe.fclist, l, 'Longest SFOAE')
-StdPlot(data.sfe.fclist, general, 'Long SFOAE')
+InterTrialPlot(n, general, data.sfe.fclist, l, 'Longest SFOAE', name,0)
+StdPlot(data.sfe.fclist, general, 'Longest SFOAE',name,0)

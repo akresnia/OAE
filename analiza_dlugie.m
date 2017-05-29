@@ -1,4 +1,7 @@
-wczytanie;
+%directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
+directory_name = 'C:\Users\Alicja\Desktop\praca mgr\OAE Kasi K\';
+name = 'Kasia';
+wczytanie(directory_name);
 %b - 1 - # of long trials
 n = 25; %length(data.sfe.fp)
 m = 5; %length(data.sfe.fclist)
@@ -44,5 +47,5 @@ subplot(2,2,2); boxplot(gen_mean.L,round(data.sfe.fclist,-1))
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1))
 %xlabel('Frequency [Hz]')
-InterTrialPlot(m, gen_mean, data.sfe.fclist, l, 'LongSFOAE')
-StdPlot(data.sfe.fclist, gen_mean, 'Long SFOAE')
+InterTrialPlot(m, gen_mean, data.sfe.fclist, l, 'LongSFOAE', name,0)
+StdPlot(data.sfe.fclist, gen_mean, 'Long SFOAE',name,0)
