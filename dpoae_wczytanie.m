@@ -1,5 +1,6 @@
-filename = 'dpoae_data_Mikolaj.txt';
-name = 'Mikolaj';
+name = 'Kasia';
+filename = ['dpoae_data_' name '.txt'];
+SaveFlag = 0;
 fileID = fopen(filename);
 head_lines  =5;% 4125; %9276;
 m = 6; %number of tested frequencies
@@ -57,8 +58,10 @@ plot(DPfreqs, DP1s.L); title('Left ear'); ylabel('DP1 [dB SPL]')
 subplot(2,1,2)
 plot(DPfreqs, DP1s.R); title('Right ear'); xlabel('Frequency [Hz]')
 ylabel('DP1 [dB SPL]')
+if SaveFlag
 print(['DP1_summary_' name], '-dpng', '-noui')
+end
 
-InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE', name,1);
+InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE', name, SaveFlag);
 %RatioPlot(DPfreqs,DP1s)
-StdPlot(DPfreqs,DP1s, 'DPOAE',name,1)
+StdPlot(DPfreqs,DP1s, 'DPOAE',name, SaveFlag)
