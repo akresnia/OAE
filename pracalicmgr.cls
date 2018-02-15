@@ -14,8 +14,8 @@
 
 
 \def\@baseclass{report}
-\def\@rodzajpracy{licencjacka}
-\DeclareOption{magisterska}{\def\@rodzajpracy{magisterska}}
+\def\@rodzajpracy{magisterska}
+\DeclareOption{licencjacka}{\def\@rodzajpracy{licencjacka}}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{\@baseclass}}
 \PassOptionsToClass{a4paper,twoside,openright,11pt}{\@baseclass}
 \ProcessOptions
