@@ -13,6 +13,8 @@ tmp/
 *.xml
 *.iml
 *.txt
+*.toc
+*.aux
 *~.nib
 local.properties
 .classpath

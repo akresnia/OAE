@@ -1,0 +1,179 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% szablon pracy licencjackiej 
+% korzystający ze stylu pracalicmgr.cls
+% 2017.03.01 P. Durka durka@fuw.edu.pl 
+% na podstawie pliku J. Żygierewicz 2016
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\documentclass{pracalicmgr}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\usepackage{float}
+\graphicspath{ {./images/} }
+
+%\usepackage[round]{natbib}   % omit 'round' option if you prefer square brackets
+%\bibliographystyle{plainnat}
+%\usepackage[maxcitenames=2, backend=biber, style=authoryear]{biblatex}
+%\renewcommand*{\nameyeardelim}{\addcomma\space}
+%\renewcommand*{\nameyeardelim}{\addcomma\space}
+
+\usepackage{ gensymb }
+
+\input{zmiana_nazw.tex}
+
+
+\author{Alicja Krześniak}
+
+\nralbumu{335244}
+
+
+\title{Comparison of Single Frequency Otoacoustic Emissions and Distortion Product Otoacoustic Emissions}
+
+\tytulang{Emisje otoakustyczne wywołane przez bodźce tonalne w porównaniu z emisjami produktów zniekształceń nieliniowych}
+
+\kierunek{Applications of Physics in Biology and Medicine}
+
+\specjalnosc{Neuroinformatics}
+
+\opiekun{Jarosław Żygierewicz, Ph.D. 
+	\\Biomedical Physics Division
+	\\Instytute of Experimental Physics
+	\\Faculty of Physics, University of Warsaw
+	\\and
+	\\prof. Wiesław Jędrzejczak
+	\\Department of Experimental Audiology
+	\\Institute of Physiology and Pathology of Hearing }
+
+%\dziedzina{13.200}
+\dziedzina{13.2 Physics}
+
+\date{June 2018}
+
+\keywords{po polsku czy po ang?}
+
+\bibliography{bibliografia}
+
+\begin{document}
+
+
+    \maketitle
+    \let\cleardoublepage\clearpage
+    
+    \begin{abstract}
+Krótkie (maks. 800 znaków) streszczenie pracy, na przykład:
+
+Lorem ipsum – tekst składający się z łacińskich i quasi-łacińskich wyrazów, mający korzenie w klasycznej łacinie, wzorowany na fragmencie traktatu Cycerona „O granicach dobra i zła” (De finibus bonorum et malorum) napisanego w 45 r. p.n.e. Tekst jest stosowany do demonstracji krojów pisma (czcionek, fontów), kompozycji kolumny itp. Po raz pierwszy został użyty przez nieznanego drukarza w XVI w.
+
+Tekst w obcym języku pozwala skoncentrować uwagę na wizualnych aspektach tekstu, a nie jego znaczeniu.
+
+
+     \end{abstract}
+
+  
+    \tableofcontents
+    
+    \chapter*{Goal}
+    \addcontentsline{toc}{chapter}{Goal}
+    
+    \chapter{Introduction}
+    
+    \section{Structure of the visual system}
+
+    \begin{figure}[htbp]
+    	\begin{center}
+    		
+    	\end{center}
+    	\caption{Neural circuitry in the retina (modified from \cite{carlsonphysiology}).}
+    	\label{rys:neural_circuitry}
+    \end{figure}      
+
+   \section{Parallel processing in the visual system}
+
+	\begin{figure}[H]
+	\begin{subfigure}{.33\textwidth}
+		\centering
+
+		\caption{Magnocellular}
+		\label{rys:magno}
+	\end{subfigure}%
+	\begin{subfigure}{.33\textwidth}
+		\centering
+
+		\caption{Parvocellular}
+		\label{rys:parvo}
+	\end{subfigure}
+	\begin{subfigure}{.33\textwidth}
+	\centering
+
+	\caption{Koniocellular}
+	\label{rys:konio}
+	\end{subfigure}
+	\caption{Three most important morphological classes of ganglion cells  (Drawing on the basis of \cite{parallel}).}
+	\label{rys:ganglio}
+	\end{figure}
+	
+ 
+\chapter{Materials and methods}   
+ 	\section{Subjects}
+ 	All experimental procedures  were performed conducted in accordance with the ARVO Statement for the Use of Animals in Ophthalmic and Vision Research and  the EC Directive 86/609/EEC for animal experiments using protocols and methods accepted by the First Warsaw Local Ethical Commission for Animal Experimentation. The experiments took place in Neurobiology of Vision Laboratory in Nencki Institute with great help from mgr Katarzyna Kordecka.
+ 	For electrophysiological experiments presented in this study, we used 6 adult male Wistar rats (250-300g). All animals were housed with free access to food and water and maintained on a 12 h light/dark cycle.
+ 	
+ 	\section{Surgical procedures}
+ 	Animals were under deep urethane anesthesia (1.5 g/kg, Sigma-Aldrich, Germany, 30\% aqueous solution, i.p) and placed in a stereotaxic apparatus. Additional doses of urethane (0.15 g/kg) were administered if it was such a necessity. Body temperature was maintained between 36 and 38 \degree C using an automatically controlled electric heating blanket. Every hour fluid requirements were fulfilled by subcutaneous injections of 0.9\% NaCl (1ml/hour) and eyes were humidified with Vidisic (Polfa Warszawa S.A., ...(line truncated)...
+ 	
+ 	\section{Electrophysiology recording}
+
+    \chapter{Data analysis}
+    \section{Description averaging visual potentials}
+ 
+    \begin{equation}
+    x_i(t) = s(t) + n_i(t),
+    \end{equation}
+    where s(t) is a real signal, ni(t) noise part. For white noise with mean zero, expected value equals:
+    \begin{equation}
+    E\left[ \frac{1}{N}\sum_{i=1}^{N} n_i(t)\right] = 0, 
+    \end{equation}
+    which causes that for averaged signal: $E\left[ \bar{x}(t) \right] = s(t).$
+    
+    \section{Usage of method}
+
+     
+    \begin{figure}[H]
+
+    	\label{rys:wybieranie_kanalow}
+    \end{figure} 
+     
+    \chapter{Results}
+    Visual response to a single visual stimulus is usually too weak to distinguish from the background of spontaneous activity of visual cortex. Averaging across several repetitions makes evoked potential stand out (Fig. \ref{rys:usrednianie}).
+    
+
+    
+    \section{Overview of results obtain in the time domain}
+    Next, there are all experiments with 6 different stimulation frequency presented one after another. In the Figure \ref{rys:srednie_1_2} results of stimulation with 1 and 2 Hz frequencies are presented---there is a clear peak of response after each repetition of stimulus.
+    
+
+    
+  
+	
+    \section{Overview of results obtain in the frequency domain}
+    
+
+
+    \chapter{Discussion}
+    
+    
+
+%\printbibliography[heading=bibintoc]
+
+\end{document}
