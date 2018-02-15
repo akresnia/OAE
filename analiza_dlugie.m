@@ -1,8 +1,12 @@
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
-name = 'Kasia';
+names = {'Kasia_K','Magda P','Ewa_K','Agnieszka_K','Krystyna',...
+    'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
+    'Justyna_G','Alicja_B'};
+name_idx = 1; 
+name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 SaveFlag = 0;
-y_lim = [-10 20];
+y_lim = [-15 20];
 [a, b, c, short, long, longest] = wczytanie(directory_name);
 %b - 1 - # of long trials
 n = 25; %length(data.sfe.fp)
