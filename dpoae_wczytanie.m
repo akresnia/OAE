@@ -1,12 +1,7 @@
-names = {'Kasia_K','Magda P','Ewa_K','Agnieszka_K','Krystyna',...
-    'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-    'Justyna_G','Alicja_B'};
-name_idx = 4; 
-name = char(names(name_idx));
-directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
+name = 'Kasia';
 filename = ['dpoae_data_' name '.txt'];
 SaveFlag = 0;
-fileID = fopen([directory_name filename]);
+fileID = fopen(filename);
 head_lines  =5;% 4125; %9276;
 m = 6; %number of tested frequencies
 % C_data1 = textscan(fileID,['%q', '%*q', '%*q', ...

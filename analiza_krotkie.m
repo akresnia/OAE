@@ -1,14 +1,10 @@
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
-names = {'Kasia_K','Magda P','Ewa_K','Agnieszka_K','Krystyna',...
-    'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-    'Justyna_G','Alicja_B'};
-name_idx = 12; 
-name = char(names(name_idx));
+name = 'Mikolaj'; 
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 SaveFlag = 0;
-y_lim = [-15 25];
+y_lim = [-3 25];
 leg = 0; %legend flag
 
 col = 2; pos = 3; %subplot values
@@ -21,7 +17,7 @@ else
 end    
 
 [a, b, c, short, long, longest] = wczytanie(directory_name);
-%a - 1 = # of short trials
+%a - 1 - # of short trials
 n = 4; %length(data.sfe.fp)
 general.L = zeros(1,n);
 general.R = zeros(1,n);
