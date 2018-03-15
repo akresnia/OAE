@@ -15,7 +15,7 @@ plot(freqs, st_dev.L, 'DisplayName', 'Left ear')
 plot(freqs, st_dev.R, 'DisplayName', 'Right ear')
 %plot(freqs, ones(1,m), 'k--', 'DisplayName', '1 level')
 xlabel('Frequency [Hz]'); ylabel('std (f_i) [dB SPL]')
-xlim([800 4200]); ylim([0 5])
+xlim([800 6200]); ylim([0 8])
 legend('show')
 title([type ' - ' Name])
 grid on
