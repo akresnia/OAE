@@ -1,11 +1,14 @@
-names = {'Kasia_K','Magda P','Ewa_K','Agnieszka_K','Krystyna',...
+names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-    'Justyna_G','Alicja_B'};
-name_idx = 4; 
+    'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
+    'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
+    };
+name_idx = 13; 
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 filename = ['dpoae_data_' name '.txt'];
 SaveFlag = 0;
+f2_on_xaxis = 1;
 fileID = fopen([directory_name filename]);
 head_lines  =5;% 4125; %9276;
 m = 6; %number of tested frequencies
@@ -22,51 +25,70 @@ data = C_data1{1}(idx1+1:idx2-1,:);
 fclose(fileID);
 % {“SessionID”, "MeasurementID", "PointerNo", "Ear","f1",
 % "f2", "TL1" (target f1 level),"TL2", "TA",  "ML1" (measured f1 level)
-% "ML1PH", ML2, ML2PH, NF0, NF1 (noise floor for DP1)
-% NF<2-6>
-% DP<0-4>
-% DP5, DP6, MinDP (Minimum DPOAE level criterion in dB SPL) (26 column), MinSN, Good (28 column)( =1 if point passed)
-% GoodNF, Bad, Rej (31 column) ( =1 if point rejected), ArtRej, “RejNf ” — Noise level criterion in dB SPL for rejecting test point. 
+% ML2, NF0, NF1 (noise floor for DP1, column 13), NF2,NF3
+% NF<4-6>, DP0,DP1
+% DP<2-6>
+% MinDP (Minimum DPOAE level criterion in dB SPL) (26 column), MinSN, Good,GoodNF, Bad, 
+% Rej (31 column), ArtRej, “RejNf ” — Noise level criterion in dB SPL for rejecting test point.
+% Later DPPH i MLPH
 prep = @(x) str2num(char(strrep(x, ',','.')));
 f1s = prep(data(1:6,5));
 f2s = prep(data(1:6,6));
 
-DPfreqs = 2*f1s - f2s;
-DP1s.L = zeros(1,m);
-DP1s.R = zeros(1,m);
-EarCol = cell2mat(data(:,4));
-%l.L = sum(EarCol(:)=='L');
-%l.R = sum(EarCol(:)=='R');
-l.L = 1;
-l.R = 1;
-for i = 1: (idx2-1 - (idx1))/m
-    if strcmp(data(i*m-2 ,4),'L')
-        DP1s.L(l.L,:) = prep(data((i-1)*m+1:i*m, 20));
-        l.L = l.L + 1;
-    elseif strcmp(data(i*m-2, 4),'R')
-        DP1s.R(l.R,:) = prep(data((i-1)*m+1:i*m, 20));
-        l.R = l.R + 1;
-    else
-        disp('Wrong ear name');
-    end
+if f2_on_xaxis
+    DPfreqs = f2s;
+    xlab = 'f2 Frequency [Hz]';
+else
+    DPfreqs = 2*f1s - f2s;
+    xlab = '2*f1 - f2 Frequency [Hz]';
 end
-%check
-l.L =l.L-1;
-l.R = l.R-1;
-disp('check:')
-disp( sum(EarCol(:)=='L')/m == l.L)
-disp( sum(EarCol(:)=='R')/m == l.R)
+% DP1.L = zeros(1,m);
+% DP1.R = zeros(1,m);
+EarCol = cell2mat(data(:,4));
+DP1Col = prep(data(:,20));
+NoiseCol_NF1 = prep(data(:,13));
+MinDPCol = prep(data(:,26));
+SNdiff = DP1Col-NoiseCol_NF1;
+%MinDP = prep({'-7,84';'-6,9';'-5,93';'-11,5';'-9,85';'-8,1'});
+
+MinSNdiff = 6; %dB
+MinDPid = DP1Col > MinDPCol;
+SNid = SNdiff > MinSNdiff;
+Pass_id = MinDPid & SNid;
+for d=['L','R']
+    datapts= sum(EarCol(:)==d); %datapoints for this ear
+    l.(d) = datapts/m; % datapoints / freqs in each trial = trials
+    ear_id = cell2mat(data(:,4))== d; %logical table with ones for current ear
+    pass_id.(d) = Pass_id(ear_id);
+    DP1.(d) = DP1Col(ear_id);
+    DP1.(d) = reshape(DP1.(d), [m,l.(d)])';%data in rows, starting from f2=6000
+    pass_id.(d) = reshape(pass_id.(d), [m,l.(d)])';
+end
 
 figure()
 subplot(2,1,1)
-plot(DPfreqs, DP1s.L); title('Left ear'); ylabel('DP1 [dB SPL]')
+plot(DPfreqs, DP1.L,'-.'); title('Left ear'); ylabel('DP1 [dB SPL]')
+xlim([900 6100]);
+hold on
+freqs = repmat(DPfreqs',l.L,1);
+scatter(freqs(pass_id.L), DP1.L(pass_id.L), 30, 'g', 'filled')
+scatter(freqs(~pass_id.L), DP1.L(~pass_id.L), 30, 'r')
+hold off
+
 subplot(2,1,2)
-plot(DPfreqs, DP1s.R); title('Right ear'); xlabel('Frequency [Hz]')
+plot(DPfreqs, DP1.R,'-.'); title('Right ear'); xlabel(xlab)
 ylabel('DP1 [dB SPL]')
+xlim([900 6100]);
+hold on
+freqs2 = repmat(DPfreqs',l.R,1);
+scatter(freqs2(pass_id.R), DP1.R(pass_id.R), 30, 'g', 'filled')
+scatter(freqs2(~pass_id.R), DP1.R(~pass_id.R), 30, 'r')
+hold off
+
 if SaveFlag
 print(['DP1_summary_' name], '-dpng', '-noui')
 end
 
-InterTrialPlot(m, DP1s', DPfreqs, l, 'DPOAE', name, SaveFlag);
-%RatioPlot(DPfreqs,DP1s)
-StdPlot(DPfreqs,DP1s, 'DPOAE',name, SaveFlag)
+InterTrialPlot(m, DP1, DPfreqs, l, 'DPOAE', name, SaveFlag);%why was dp1'
+% %RatioPlot(DPfreqs,DP1s)
+StdPlot(DPfreqs,DP1, 'DPOAE',name, SaveFlag)
