@@ -21,7 +21,8 @@ for p=1:2
     ylabel('Level(f_i) - mean(f_i) + 5*i [dB SPL]');
     legend('Location', 'eastoutside')
     if SaveFlag
-        print([MeasurType '_intertrial_' ear '_' Name], '-dpng', '-noui')
+        dir_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' Name '\images\'];
+        print([dir_name MeasurType '_intertrial_' ear '_' Name], '-dpng', '-noui')
     end
 end
 hold off
