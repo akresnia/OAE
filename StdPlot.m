@@ -11,15 +11,17 @@ end
 
 figure()
 hold on
-stem(freqs, st_dev.L, 'DisplayName', 'Left ear')
-stem(freqs, st_dev.R, 'DisplayName', 'Right ear')
+stem(freqs, st_dev.L, 'filled','DisplayName', 'Left ear' )
+stem(freqs, st_dev.R, 'filled', 'DisplayName', 'Right ear')
 %plot(freqs, ones(1,m), 'k--', 'DisplayName', '1 level')
 xlabel('Frequency [Hz]'); ylabel('std (f_i) [dB SPL]')
 xlim([800 6200]); ylim([0 8])
 legend('show')
 title([type ' - ' Name])
 grid on
+
 if SaveFlag
-    print([type '_std_' Name], '-dpng', '-noui')
+    dir_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' Name '\images\'];
+    print([dir_name type '_std_' Name], '-dpng', '-noui')
 end
 hold off
