@@ -29,6 +29,10 @@ for i=1:b-1 %for each trial in dataset
     y_clusters = reshape(y,[],m); %clusters in columns
     noisy_pts = (data.eval.snr<snr_value);
     noise_clusters = reshape(noisy_pts,[],m);
+    snr_clusters = reshape(data.eval.snr,[],m);
+    [val,id] = max(snr_clusters); %over columns=freqs
+    [tf,loc] = ismember(val, data.eval.snr); %finding indices of points with max snr over freqs' clusters
+    max_snr_vals = y(loc);
 
     d=long{i,1};
     if d=='L' || d=='R'
@@ -39,7 +43,8 @@ for i=1:b-1 %for each trial in dataset
 
         general.(d)(el.(d)+1,:)= y;
         gen_mean.(d)(el.(d)+1,:)= small;
-        gen_mean_clean.(d)(el.(d)+1,:)= small_clean;
+        gen_mean_clean.(d)(el.(d)+1,:)= small_clean; %may contain nans
+        gen_max_snr.(d)(el.(d)+1,:)= max_snr_vals;
         noise_idx.(d)(el.(d)+1,:) = noisy_pts; % 25 idcs in rows
         noise_clu.(d)(el.(d)+1,:) = noisy_clust; % 5 idcs in rows
 
@@ -58,10 +63,10 @@ for d=['L','R']
     subplot(2,2,k);    
     f = data.sfe.fclist;
     freqs = repmat(f,el.(d),1);
-    plot(data.sfe.fclist,gen_mean.(d),'-.')
+    plot(data.sfe.fclist,gen_max_snr.(d),'-.')
     hold on
-    scatter(freqs(noise_clu.(d)), gen_mean.(d)(noise_clu.(d)), 30, 'r')
-    scatter(freqs(~noise_clu.(d)), gen_mean_clean.(d)(~noise_clu.(d))', 30, 'g', 'filled')
+    scatter(freqs(noise_clu.(d)), gen_max_snr.(d)(noise_clu.(d)), 30, 'r')
+    scatter(freqs(~noise_clu.(d)), gen_max_snr.(d)(~noise_clu.(d))', 30, 'g', 'filled')
 
 title(['Long SFOAE "' d '" ear'])
 pl = plot(data.sfe.fclist, mean(gen_mean.(d)),'r', 'LineWidth', 1.5, ...
@@ -74,6 +79,7 @@ end
 
 
 subplot(2,2,2); boxplot(gen_mean.L,round(data.sfe.fclist,-1)); ylim(y_lim)
+title('Means of all pts in clusters')
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1)); ylim(y_lim)
 %xlabel('Frequency [Hz]')
