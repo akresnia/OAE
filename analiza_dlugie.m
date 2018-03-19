@@ -36,19 +36,18 @@ for i=1:b-1 %for each trial in dataset
 
     d=long{i,1};
     if d=='L' || d=='R'
+        el.(d) = el.(d) + 1;
         small= mean(y_clusters);
         y_clusters(noise_clusters) = NaN;
         small_clean = mean(y_clusters, 'omitnan');
         noisy_clust = isnan(small_clean); %clusters without good snr measurements
 
-        general.(d)(el.(d)+1,:)= y;
-        gen_mean.(d)(el.(d)+1,:)= small;
-        gen_mean_clean.(d)(el.(d)+1,:)= small_clean; %may contain nans
-        gen_max_snr.(d)(el.(d)+1,:)= max_snr_vals;
-        noise_idx.(d)(el.(d)+1,:) = noisy_pts; % 25 idcs in rows
-        noise_clu.(d)(el.(d)+1,:) = noisy_clust; % 5 idcs in rows
-
-        el.(d) = el.(d) + 1;       
+        general.(d)(el.(d),:)= y;
+        gen_mean.(d)(el.(d),:)= small;
+        gen_mean_clean.(d)(el.(d),:)= small_clean; %may contain nans
+        gen_max_snr.(d)(el.(d),:)= max_snr_vals;
+        noise_idx.(d)(el.(d),:) = noisy_pts; % 25 idcs in rows
+        noise_clu.(d)(el.(d),:) = noisy_clust; % 5 idcs in rows      
     end
 end
 clear i j small 
@@ -68,13 +67,21 @@ for d=['L','R']
     scatter(freqs(noise_clu.(d)), gen_max_snr.(d)(noise_clu.(d)), 30, 'r')
     scatter(freqs(~noise_clu.(d)), gen_max_snr.(d)(~noise_clu.(d))', 30, 'g', 'filled')
 
-title(['Long SFOAE "' d '" ear'])
-pl = plot(data.sfe.fclist, mean(gen_mean.(d)),'r', 'LineWidth', 1.5, ...
+    title(['Long SFOAE "' d '" ear'])
+    pl = plot(data.sfe.fclist, mean(gen_mean.(d)),'r', 'LineWidth', 1.5, ...
     'DisplayName', 'Noisy Mean');
-legend(pl)
-xlabel('Frequency [Hz]'); ylabel('Mean SFOAE [dB SPL]'); 
-xlim([800 4200]); ylim(y_lim)
-hold off
+    legend(pl)
+    xlabel('Frequency [Hz]'); ylabel('Mean SFOAE [dB SPL]'); 
+    xlim([800 4200]); ylim(y_lim)
+    
+    % fraction of measurements that pass snr criterion
+    s = sum(noise_idx.(d)(:));
+    den = length(noise_idx.(d)(:));
+    p=den-s;
+    fr = p/den ;
+    text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
+        num2str(100*fr) ' %'])
+    hold off
 end
 
 
