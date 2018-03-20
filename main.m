@@ -15,7 +15,7 @@ R2_sfs=NaN(1,length(names)); %R2 in SFOAE short
 R2_sfl=NaN(1,length(names)); %R2 in SFOAE long
 R2_dp=NaN(1,length(names)); %R2 in DPOAE
 
-for name_idx = 1:19
+for name_idx = 1:1
 name = char(names(name_idx));
 [fr,R2] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialFlag); %fraction of passes in %
 frac_sfs(name_idx) = fr; 

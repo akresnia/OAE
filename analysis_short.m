@@ -1,4 +1,4 @@
-function [fr] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag)
+function [frac,R2] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialFlag)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -13,16 +13,14 @@ function [fr] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag)
 %name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 %SaveFlag = 0;
-y_lim = [-20 25]; %make dynamical?
+y_lim = [-23 23]; %make dynamical?
 leg = LegFlag; %legend flag
 
 if leg
     col = 1; %subplot values
-    pos = 2;
     %figure('Position',[200 100 850 450])
 else
     col = 2;
-    pos = 3;
 end    
 
 [a, b, c, short, long, longest] = wczytanie(directory_name);
@@ -50,17 +48,17 @@ clear i j d
 f = data.sfe.fp;
 pos = 1;
 figure('Name', name)
-suptitle(['Patient ID: ' num2str(name_idx)])
 
 for d=['L','R'] 
     subplot(2,col,pos);
-    plot(f,general.(d)','-.'); title(['Quick SFOAE, "' d '" ear'])
+    plot(f,general.(d)','-.') 
+    title(['Quick SFOAE, "' d '" ear'])
     xlabel('Frequency [Hz]')
     xlim([800 4200]); ylim(y_lim)
     hold on
     freqs = repmat(f,el.(d),1);
     scatter(freqs(noise_idx.(d)), general.(d)(noise_idx.(d)), 30, 'r','DisplayName', 'Failed')
-    scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d))', 30, 'g', 'filled', 'DisplayName', 'Passed')
+    scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d)), 30, 'g', 'filled', 'DisplayName', 'Passed')
     % fraction of measurements that pass snr criterion
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
@@ -78,14 +76,16 @@ for d=['L','R']
 %         legend(pl, 'Location','southwest')
     end
     ylabel('Level [dB SPL]')
-%     hold off
 
     if ~leg
         pos = pos+1;
-        subplot(2,2,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
+        subplot(2,2,pos) 
+        boxplot(general.(d),round(f,-1)) 
+        ylim(y_lim)
         title(['All Quick SFOAE, "' d '" ear'])
 %         xlabel('Frequency [Hz]')
     end
+    suptitle(['Patient ID: ' num2str(name_idx)])
     pos = pos+1;
 end
 hold off
@@ -96,7 +96,10 @@ elseif ~leg && SaveFlag
     print([directory_name 'images\short_SFOAE_trials_boxplots_' name],...
         '-dpng', '-noui')
 end
-fr = (fr.L + fr.R)/2;
+
 %% reproducibility analysis
-InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name,SaveFlag)
-StdPlot(data.sfe.fp, general, 'Short SFOAE',name,SaveFlag)
+frac = (fr.L + fr.R)/2;
+if StdInterTrialFlag
+InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name, name_idx,SaveFlag);
+[~, R2] =StdPlot(data.sfe.fp, general, 'Short SFOAE',name, name_idx,SaveFlag);
+end
