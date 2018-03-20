@@ -1,6 +1,8 @@
+clear all
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
+
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
@@ -10,17 +12,15 @@ name_idx = 19;
 snr_value = 9;
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
-SaveFlag = 0;
-y_lim = [-20 25]; %make dynamical!
-leg = 0; %legend flag
+SaveFlag = 1;
+y_lim = [-20 25]; %make dynamical?
+leg = 1; %legend flag
 
-col = 2; pos = 3; %subplot values
 if leg
-    col = 1;
-    pos = 2;
+    col = 1; %subplot values
     %figure('Position',[200 100 850 450])
 else
-    figure(1) %to allow comparison with longer trials
+    col = 2;
 end    
 
 [a, b, c, short, long, longest] = wczytanie(directory_name);
@@ -29,69 +29,75 @@ n = 4; %length(data.sfe.fp)
 general.L = zeros(1,n); %zmieniæ na dane w wierszach? naprawiæ freqs
 general.R = zeros(1,n);
 
-
-l.R = 0;
-l.L = 0;
+el.R = 0;
+el.L = 0;
 
 for i=1:a-1 %for each trial in dataset
     data = short{i,3};
     y = real(20*log10(data.sfe.dP));
     for d=['L','R']
         if short{i,1}==d
-            general.(d)(l.(d)+1,:)= y; %data in columns
-            noise_idx.(d)(l.(d)+1,:) = (data.eval.snr<snr_value); %idcs in rows
-            l.(d) = l.(d) + 1;
+            general.(d)(el.(d)+1,:)= y; %data in columns
+            noise_idx.(d)(el.(d)+1,:) = (data.eval.snr<snr_value); %idcs in rows
+            el.(d) = el.(d) + 1;
         end
     end
 end
 clear i j d
-            
-subplot(2,col,1);
-xlim([800 4200]); ylim(y_lim)
-hold on
-plot(data.sfe.fp,general.L','-.'); title('Quick SFOAE, "L" ear')
 
+%% plotting
 f = data.sfe.fp;
-freqs = repmat(f,l.L,1);
-scatter(freqs(noise_idx.L), general.L(noise_idx.L), 30, 'r')
-scatter(freqs(~noise_idx.L), general.L(~noise_idx.L)', 30, 'g', 'filled')
+pos = 1;
+figure('Name', name)
+suptitle(['Patient ID: ' num2str(name_idx)])
 
-pl = plot(data.sfe.fp,mean(general.L),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
-if leg
-legend('Location', 'westoutside')
-else
-legend(pl, 'Location','northwest')
-end
-ylabel('Level [dB SPL]')
-hold off
+for d=['L','R'] 
+    subplot(2,col,pos);
+    plot(f,general.(d)','-.'); title(['Quick SFOAE, "' d '" ear'])
+    xlabel('Frequency [Hz]')
+    xlim([800 4200]); ylim(y_lim)
+    hold on
+    freqs = repmat(f,el.(d),1);
+    scatter(freqs(noise_idx.(d)), general.(d)(noise_idx.(d)), 30, 'r','DisplayName', 'Failed')
+    scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d))', 30, 'g', 'filled', 'DisplayName', 'Passed')
+    % fraction of measurements that pass snr criterion
+    s = sum(noise_idx.(d)(:));
+    den = length(noise_idx.(d)(:));
+    p = den-s;
+    fr.(d) = 100* p/den ;
+    text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
+        num2str(fr.(d)) ' %'])
 
-subplot(2,col,pos); 
-xlim([800 4200]); ylim(y_lim)
-xlabel('Frequency [Hz]'); ylabel('Level [dB SPL]')
-hold on
-plot(data.sfe.fp,general.R','-.'); title('Quick SFOAE, "R" ear')
-freqs2 = repmat(f,l.R,1);
-scatter(freqs2(noise_idx.R), general.R(noise_idx.R), 30, 'r')
-scatter(freqs2(~noise_idx.R), general.R(~noise_idx.R), 30, 'g', 'filled')
-
-pr = plot(data.sfe.fp,mean(general.R),'r', 'LineWidth', 1.5, 'DisplayName','Mean'); 
-if leg
-    legend('Location','westoutside')
-else
-    legend(pr, 'Location','southwest')
-end
-hold off
-
-if leg && SaveFlag
-    print(['short_SFOAE_trials_' name], '-dpng', '-noui')
-elseif ~leg
-    subplot(2,2,2); boxplot(general.L,round(data.sfe.fp,-1)); ylim(y_lim)
-    %xlabel('Frequency [Hz]')
-    subplot(2,2,4); boxplot(general.R,round(data.sfe.fp,-1)); ylim(y_lim)
-    %xlabel('Frequency [Hz]')
-    if SaveFlag
-        print(['short_SFOAE_trials_boxplots_' name], '-dpng', '-noui')
+    pl = plot(f,mean(general.(d)),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
+    if leg
+        legend('Location', 'westoutside')
+    elseif ~leg %&& d=='L'
+        legend(pl, 'Location','northwest')
+%     else
+%         legend(pl, 'Location','southwest')
     end
+    ylabel('Level [dB SPL]')
+%     hold off
+
+    if ~leg
+        pos = pos+1;
+        subplot(2,2,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
+        title(['All Quick SFOAE, "' d '" ear'])
+%         xlabel('Frequency [Hz]')
+    end
+    pos = pos+1;
 end
-InterTrialPlot(n, general, data.sfe.fp, l, 'Short SFOAE', name,SaveFlag)
-StdPlot(data.sfe.fp, general, 'Short SFOAE',name,SaveFlag)
+hold off
+
+%% saving
+if leg && SaveFlag
+    print([directory_name 'images\short_SFOAE_trials_' name], '-dpng', '-noui')
+elseif ~leg && SaveFlag
+    print([directory_name 'images\short_SFOAE_trials_boxplots_' name],...
+        '-dpng', '-noui')
+end
+
+%% reproducibility analysis
+frac = (fr.L + fr.R)/2
+%InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name,name_idx,SaveFlag)
+% StdPlot(data.sfe.fp, general, 'Short SFOAE',name,name_idx,SaveFlag)
