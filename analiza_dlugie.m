@@ -78,9 +78,9 @@ for d=['L','R']
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
     p=den-s;
-    fr = p/den ;
+    fr.(d) = p/den ;
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(100*fr) ' %'])
+        num2str(100*fr.(d)) ' %'])
     hold off
 end
 
@@ -93,9 +93,10 @@ subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1)); ylim(y_lim)
 
 %% saving the plot
 if SaveFlag
-    print(['long_SFOAE_trials_boxplots_' name], '-dpng', '-noui')
+    print([directory_name 'images\long_SFOAE_trials_boxplots_' name], '-dpng', '-noui')
 end
 
 %% Reproducibility analysis
+frac = (fr.L + fr.R)/2
 InterTrialPlot(m, gen_mean_clean, data.sfe.fclist, el, 'LongSFOAE', name,SaveFlag)
 StdPlot(data.sfe.fclist, gen_mean_clean, 'Long SFOAE',name,SaveFlag)

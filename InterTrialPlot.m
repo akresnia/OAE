@@ -1,4 +1,4 @@
-function [y] = InterTrialPlot (NoFreqs, Data, fclist, NoTrials, MeasurType, Name, SaveFlag)
+function [y] = InterTrialPlot (NoFreqs, Data, fclist, NoTrials, MeasurType, Name, Name_idx, SaveFlag)
 %%% data: rows - measurements, columns - frequencies %%%
 
 l = NoTrials;
@@ -6,7 +6,7 @@ colors = {'m','c','r','g','b','k'};
 ears = ['L';'R'];
 for p=1:2
     ear = ears(p);
-    figure()
+    figure('Name', ['InTr' ear Name])
     hold on
     grid on
     for i=1:NoFreqs
@@ -16,7 +16,7 @@ for p=1:2
         plot(1:l.(ear),zeros(1,l.(ear))+5*i, '-.', 'Color', char(colors(mod(i,6)+1)), ...
             'DisplayName', ['Zero level for f_', num2str(i)])
     end
-    title([MeasurType ', "' ear '"' ' ear - ' Name])
+    title([MeasurType ', "' ear '"' ' ear - ID: ' num2str(Name_idx)])
     xlabel('Number of trial')
     ylabel('Level(f_i) - mean(f_i) + 5*i [dB SPL]');
     legend('Location', 'eastoutside')
