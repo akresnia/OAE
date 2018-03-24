@@ -103,9 +103,9 @@ for d=['L','R']
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
     p=den-s;
-    fr.(d) = p/den ;
+    fr.(d) =100* p/den ;
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(100*fr.(d)) ' %'])
+        num2str(fr.(d)) ' %'])
     hold off
 end
 
