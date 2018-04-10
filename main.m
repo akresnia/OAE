@@ -44,7 +44,7 @@ nbins = 15;
 MinR2 = min([R2_sfl R2_sfs R2_dp]);
 MaxR2 = max([R2_sfl R2_sfs R2_dp]);
 edges = linspace(MinR2,MaxR2,nbins);
-width = (edges(2)-edges(1))/2;
+width = (edges(2)-edges(1));
 [N2,~] = histcounts(R2_sfl,edges);
 [N1,~] = histcounts(R2_sfs,edges);
 % [N2,edges2] = histcounts(R2_sfl,edges1);
@@ -54,15 +54,23 @@ bar(edges(2:end)-width/2,[N1;N2;N3]')
 legend('SF short', 'SF long', 'DP')
 title(['R2 histograms, option ' option ' in long SFOAE'])
 ylabel('counts')
-zlabel('R2 values [dB SPL]')
+xlabel('R2 values [dB SPL]')
+ax = gca;
+ax.XTick = round(MinR2:width:MaxR2,1);
 %% plotting histogram of fraq
 nbins =10;
-[F1,edges1] = histcounts(frac_sfs,nbins);
-[F2,edges2] = histcounts(frac_sfl, nbins);
-[F3,edges3] = histcounts(frac_dp,nbins);
+edges1 = linspace(0,100,nbins+1); %values are percents
+width = (edges1(2)-edges1(1));
+[F1,~] = histcounts(frac_sfs,edges1);
+[F2,~] = histcounts(frac_sfl, edges1);
+[F3,~] = histcounts(frac_dp, edges1);
 figure()
-bar(10:10:100,[F1;F2;F3]')
+x = edges1(2:end)-width/2;
+bar(x,[F1;F2;F3]')
 legend('SF short', 'SF long', 'DP','Location', 'northwest')
 title('Histogram of fraction of measurements with "pass"')
 ylabel('counts')
 xlabel('%')
+ax = gca;
+ax.XTick = 0:width:100;
+% set(ax,'XTickLabel',x)
