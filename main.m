@@ -43,34 +43,15 @@ end
 nbins = 15;
 MinR2 = min([R2_sfl R2_sfs R2_dp]);
 MaxR2 = max([R2_sfl R2_sfs R2_dp]);
-edges = linspace(MinR2,MaxR2,nbins);
-width = (edges(2)-edges(1));
-[N2,~] = histcounts(R2_sfl,edges);
-[N1,~] = histcounts(R2_sfs,edges);
-% [N2,edges2] = histcounts(R2_sfl,edges1);
-[N3,~] = histcounts(R2_dp,edges);
-figure()
-bar(edges(2:end)-width/2,[N1;N2;N3]')
-legend('SF short', 'SF long', 'DP')
-title(['R2 histograms, option ' option ' in long SFOAE'])
-ylabel('counts')
-xlabel('R2 values [dB SPL]')
-ax = gca;
-ax.XTick = round(MinR2:width:MaxR2,1);
+Title = ['R2 histograms, option ' option ' in long SFOAE'];
+XLabel = 'R2 values [dB SPL]';
+
+PlotHistogram(R2_sfs,R2_sfl,R2_dp,'SFOAE short','SFOAE long','DPOAE',...
+    MinR2,MaxR2,nbins, Title,XLabel,'northeast')
 %% plotting histogram of fraq
 nbins =10;
-edges1 = linspace(0,100,nbins+1); %values are percents
-width = (edges1(2)-edges1(1));
-[F1,~] = histcounts(frac_sfs,edges1);
-[F2,~] = histcounts(frac_sfl, edges1);
-[F3,~] = histcounts(frac_dp, edges1);
-figure()
-x = edges1(2:end)-width/2;
-bar(x,[F1;F2;F3]')
-legend('SF short', 'SF long', 'DP','Location', 'northwest')
-title('Histogram of fraction of measurements with "pass"')
-ylabel('counts')
-xlabel('%')
-ax = gca;
-ax.XTick = 0:width:100;
-% set(ax,'XTickLabel',x)
+Title = 'Histogram of fraction of measurements with "pass"';
+XLabel = '%';
+
+PlotHistogram(frac_sfs,frac_sfl*100,frac_dp,'SFOAE short','SFOAE long','DPOAE',...
+    0,100,nbins, Title,XLabel,'northwest')
