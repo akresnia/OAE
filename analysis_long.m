@@ -1,4 +1,4 @@
-function [frac, R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialFlag)
+function [frac, R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
@@ -103,9 +103,9 @@ for d=['L','R']
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
     p=den-s;
-    fr.(d) = p/den ;
+    fr.(d) = 100* p/den ;
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(100*fr.(d)) ' %'])
+        num2str(fr.(d)) ' %'])
     hold off
 end
 
@@ -124,8 +124,10 @@ end
 
 %% Reproducibility analysis
 frac = (fr.L + fr.R)/2;
-if StdInterTrialFlag
-%InterTrialPlot(m, dataopt, f, el, ['Long SFOAE ' titopt], name, name_idx,SaveFlag)
-[~, R2] =StdPlot(f, dataopt, ['Long SFOAE ' titopt],name,name_idx,SaveFlag);
+
+if StdInterTrialPlotFlag
+    InterTrialPlot(m, dataopt, f, el, ['Long SFOAE ' titopt], name, name_idx,SaveFlag)
+end
+[~, R2] =StdPlot(f, dataopt, ['Long SFOAE ' titopt],name,name_idx,SaveFlag, StdInterTrialPlotFlag);
 end
 

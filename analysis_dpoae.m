@@ -1,4 +1,4 @@
-function [frac,R2] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialFlag)
+function [frac,R2] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag)
 % names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
 %     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
 %     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
@@ -104,8 +104,10 @@ print([directory_name 'images\DP1_summary_' name], '-dpng', '-noui')
 end
 
 frac = (fr.L + fr.R)/2;
-if StdInterTrialFlag
-InterTrialPlot(m, DP1, DPfreqs, l, 'DPOAE', name, name_idx, SaveFlag);
+
+if StdInterTrialPlotFlag
+    InterTrialPlot(m, DP1, DPfreqs, l, 'DPOAE', name, name_idx, SaveFlag);
+end
 % %RatioPlot(DPfreqs,DP1s)
-[~, R2] =StdPlot(DPfreqs,DP1, 'DPOAE',name, name_idx, SaveFlag);
+[~, R2] =StdPlot(DPfreqs,DP1, 'DPOAE',name, name_idx, SaveFlag, StdInterTrialPlotFlag);
 end

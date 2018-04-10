@@ -1,4 +1,4 @@
-function [frac,R2] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialFlag)
+function [frac,R2] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -99,7 +99,10 @@ end
 
 %% reproducibility analysis
 frac = (fr.L + fr.R)/2;
-if StdInterTrialFlag
-InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name, name_idx,SaveFlag);
-[~, R2] =StdPlot(data.sfe.fp, general, 'Short SFOAE',name, name_idx,SaveFlag);
+
+if StdInterTrialPlotFlag
+    InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name, name_idx,SaveFlag);
+end
+
+[~, R2] =StdPlot(data.sfe.fp, general, 'Short SFOAE',name, name_idx,SaveFlag, StdInterTrialPlotFlag); 
 end
