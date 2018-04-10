@@ -3,7 +3,7 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
     'Monika_W','Teresa_B','Ula_M','Urszula_O', ...
     };
-SaveFlag = 1; LegFlag = 0; StdInterTrialFlag=1;
+SaveFlag = 0; LegFlag = 0; StdInterTrialPlotFlag=0;
 snr_value = 9; sndiff = 6;
 name_idx = 1; 
 frac_sfs=NaN(1,length(names)); %fraction of passes in SFOAE short
@@ -15,22 +15,54 @@ R2_sfs=NaN(1,length(names)); %R2 in SFOAE short
 R2_sfl=NaN(1,length(names)); %R2 in SFOAE long
 R2_dp=NaN(1,length(names)); %R2 in DPOAE
 
-for name_idx = 1:1
+for name_idx = 1:length(names)
 name = char(names(name_idx));
-[fr,R2] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialFlag); %fraction of passes in %
+[fr,R2] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialPlotFlag); %fraction of passes in %
 frac_sfs(name_idx) = fr; 
 R2_sfs(name_idx) = R2; 
 clear fr R2
 option = 'clean';
 % options: 'clean', 'max_snr', 'all'
-[fr,R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialFlag); %fraction of passes in 
+[fr,R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag); %fraction of passes in 
 frac_sfl(name_idx) = fr; 
 R2_sfl(name_idx) = R2;
 clear fr R2
 
-[fr,R2] = analysis_dpoae(name, name_idx,sndiff,SaveFlag, StdInterTrialFlag); %fraction of passes in 
+[fr,R2] = analysis_dpoae(name, name_idx,sndiff,SaveFlag, StdInterTrialPlotFlag); %fraction of passes in 
 frac_dp(name_idx) = fr;
 R2_dp(name_idx) = R2;
 clear fr
+%rozrzut bez sumy po fi, sprawdziæ long clean i all, porownac plec?,
+%narysowac tez srednie z 1 lub 2 sigma
+% zrobic serie pdfow z audiometriami, emisjami i spontanicznymi, sfoae ze
+% strony mimosa acoustics
 
 end
+
+%% plotting histogram of R2
+nbins = 15;
+MinR2 = min([R2_sfl R2_sfs R2_dp]);
+MaxR2 = max([R2_sfl R2_sfs R2_dp]);
+edges = linspace(MinR2,MaxR2,nbins);
+width = (edges(2)-edges(1))/2;
+[N2,~] = histcounts(R2_sfl,edges);
+[N1,~] = histcounts(R2_sfs,edges);
+% [N2,edges2] = histcounts(R2_sfl,edges1);
+[N3,~] = histcounts(R2_dp,edges);
+figure()
+bar(edges(2:end)-width/2,[N1;N2;N3]')
+legend('SF short', 'SF long', 'DP')
+title(['R2 histograms, option ' option ' in long SFOAE'])
+ylabel('counts')
+zlabel('R2 values [dB SPL]')
+%% plotting histogram of fraq
+nbins =10;
+[F1,edges1] = histcounts(frac_sfs,nbins);
+[F2,edges2] = histcounts(frac_sfl, nbins);
+[F3,edges3] = histcounts(frac_dp,nbins);
+figure()
+bar(10:10:100,[F1;F2;F3]')
+legend('SF short', 'SF long', 'DP','Location', 'northwest')
+title('Histogram of fraction of measurements with "pass"')
+ylabel('counts')
+xlabel('%')
