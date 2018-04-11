@@ -3,7 +3,7 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
     'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
     };
-name_idx = 13; 
+name_idx = 19; 
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 filename = ['dpoae_data_' name '.txt'];
@@ -92,3 +92,4 @@ end
 InterTrialPlot(m, DP1, DPfreqs, l, 'DPOAE', name, SaveFlag);%why was dp1'
 % %RatioPlot(DPfreqs,DP1s)
 StdPlot(DPfreqs,DP1, 'DPOAE',name, SaveFlag)
+clear all
