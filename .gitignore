@@ -18,6 +18,12 @@ tmp/
 *.gz
 *.bbl
 *.bbg
+*.blg
+*.gz
+*.png
+*.mat
+*.asv
+*removal.m
 *~.nib
 local.properties
 .classpath
