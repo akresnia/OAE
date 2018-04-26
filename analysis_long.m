@@ -1,4 +1,4 @@
-function [frac, R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag)
+function [frac, R2, mean_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
@@ -11,6 +11,8 @@ function [frac, R2] = analysis_long(name, name_idx,snr_value,SaveFlag, option, S
 % name_idx = 19; 
 % snr_value = 9;
 % SaveFlag = 0;
+prc = 0.25:0.25:0.75; % population percentiles values
+
 y_lim = [-23 23];
 
 %% loading data
@@ -53,12 +55,13 @@ for i=1:b-1 %for each trial in dataset
         gen_mean_clean.(d)(el.(d),:)= small_clean; %may contain nans
         gen_max_snr.(d)(el.(d),:)= max_snr_vals;
         noise_idx.(d)(el.(d),:) = noisy_pts; % 25 idcs in rows
-        noise_clu.(d)(el.(d),:) = noisy_clust; % 5 idcs in rows      
+        noise_clu.(d)(el.(d),:) = noisy_clust; % 5 idcs in rows    
     end
     end
 end
 clear i j small 
-
+mean_SFL.L = mean(gen_mean.L);
+mean_SFL.R = mean(gen_mean.R);
 %% plotting
 % grean dots are mean values in clusters calculated from measurements with
 % good snr
@@ -78,14 +81,25 @@ else
 end
 
 figure('Name', ['Long SFOAE' name])
-
+ear_id = 1;
 for d=['L','R'] 
     hold on
     k=find(ears==d);
     subplot(2,2,k);    
     f = data.sfe.fclist;
     freqs = repmat(f,el.(d),1);
-    
+    if nargin == 7
+        disp('a')
+        load(PrctileFilename)
+        hold on
+        quant = quantile(squeeze(mean_sfl(ear_id,:,:))',prc); %1st column is left ear
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        hold on
+        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
+        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        ear_id = ear_id + 1;
+    end
 
     plot(f,dataopt.(d)','-.')
     title([titopt ' "' d '" ear'])

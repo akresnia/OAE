@@ -1,4 +1,4 @@
-function [frac,R2] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag)
+function [frac,R2, mean_DP] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag, PrctileFilename)
 % names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
 %     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
 %     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
@@ -12,6 +12,8 @@ f2_on_xaxis = 1; %if 0: on 2*f2 - f1 on xaxis
 fileID = fopen([directory_name filename]);
 head_lines = 5;% 4125; %9276;
 m = 6; %number of tested frequencies
+prc = 0.25:0.25:0.75; % population percentiles values
+
 % C_data1 = textscan(fileID,['%q', '%*q', '%*q', ...
 %     repmat('%q',[1,3]), repmat('%*q',[1,7]),repmat('%q',[1,17]),'%*[^\n]'],...
 %     'HeaderLines',head_lines,'CollectOutput',1, 'Delimiter',',');
@@ -63,6 +65,7 @@ for d=['L','R']
     DP1.(d) = DP1Col(ear_id);
     DP1.(d) = reshape(DP1.(d), [m,l.(d)])';%data in rows, starting from f2=6000
     pass_id.(d) = reshape(pass_id.(d), [m,l.(d)])';
+    mean_DP.(d) = mean(DP1.(d));
 
 end
 
@@ -70,13 +73,24 @@ end
 figure('Name', ['DP ' name])
 pos = 1; 
 y_lim = [-23 23];
+ear_id = 1;
 for d=['L','R']
     subplot(2,1,pos)
+    if nargin == 6
+        disp('a')
+        load(PrctileFilename)
+        hold on
+        quant = quantile(squeeze(mean_dp(ear_id,:,:))',prc); %1st column is left ear
+        fill([DPfreqs' DPfreqs(end:-1:1)'],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
+        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        ear_id = ear_id + 1;
+    end
     plot(DPfreqs, DP1.(d)','-.'); 
     title(['DPOAE "' d '" ear, ID: ' num2str(name_idx)]); 
     ylabel('DP1 [dB SPL]')
     xlim([900 6100]); ylim(y_lim);
-    hold on
     freqs = repmat(DPfreqs',l.(d),1);
     scatter(freqs(pass_id.(d)), DP1.(d)(pass_id.(d)), 30, 'g', 'filled')
     scatter(freqs(~pass_id.(d)), DP1.(d)(~pass_id.(d)), 30, 'r')

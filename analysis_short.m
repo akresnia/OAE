@@ -1,4 +1,4 @@
-function [frac,R2] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag)
+function [frac,R2, mean_SFs] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -13,7 +13,9 @@ function [frac,R2] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag,
 %name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 %SaveFlag = 0;
+prc = 0.25:0.25:0.75; % population percentiles values
 y_lim = [-23 23]; %make dynamical?
+
 leg = LegFlag; %legend flag
 
 if leg
@@ -47,10 +49,23 @@ clear i j d
 
 f = data.sfe.fp;
 pos = 1;
+ear_id = 1;
 figure('Name', name)
 
 for d=['L','R'] 
     subplot(2,col,pos);
+    if nargin == 7
+        disp('a')
+        load(PrctileFilename)
+        hold on
+        quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        hold on
+        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
+        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        ear_id = ear_id + 1;
+    end
     plot(f,general.(d)','-.') 
     title(['Quick SFOAE, "' d '" ear'])
     xlabel('Frequency [Hz]')
@@ -60,14 +75,15 @@ for d=['L','R']
     scatter(freqs(noise_idx.(d)), general.(d)(noise_idx.(d)), 30, 'r','DisplayName', 'Failed')
     scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d)), 30, 'g', 'filled', 'DisplayName', 'Passed')
     % fraction of measurements that pass snr criterion
+
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
     p = den-s;
     fr.(d) = 100* p/den ;
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
         num2str(fr.(d)) ' %'])
-
-    pl = plot(f,mean(general.(d)),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
+    mean_SFs.(d) = mean(general.(d));
+    pl = plot(f,mean_SFs.(d),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
     if leg
         legend('Location', 'westoutside')
     elseif ~leg %&& d=='L'
