@@ -60,8 +60,16 @@ for i=1:b-1 %for each trial in dataset
     end
 end
 clear i j small 
-mean_SFL.L = mean(gen_mean.L);
-mean_SFL.R = mean(gen_mean.R);
+if strcmp(option, 'clean')
+    mean_SFL.L = mean(gen_mean_clean.L);
+    mean_SFL.R = mean(gen_mean_clean.R);
+elseif strcmp(option, 'max_snr')
+    mean_SFL.L = mean(gen_max_snr.L);
+    mean_SFL.R = mean(gen_max_snr.R);
+else
+    mean_SFL.L = mean(gen_mean.L);
+    mean_SFL.R = mean(gen_mean.R);
+end
 %% plotting
 % grean dots are mean values in clusters calculated from measurements with
 % good snr
@@ -89,7 +97,6 @@ for d=['L','R']
     f = data.sfe.fclist;
     freqs = repmat(f,el.(d),1);
     if nargin == 7
-        disp('a')
         load(PrctileFilename)
         hold on
         quant = quantile(squeeze(mean_sfl(ear_id,:,:))',prc); %1st column is left ear
