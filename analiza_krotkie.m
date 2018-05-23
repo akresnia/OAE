@@ -3,25 +3,31 @@ clear all
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
 
-names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
+group_A = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
     'Monika_W','Teresa_B','Jedrzej_R'...
     };
-names2 = {'Alicja_B','Ula_M','Urszula_O'};
-name_idx = 1; 
+group_B = {'Alicja_B','Ula_M','Urszula_O'};
+group = 'A';
+names = eval(['group_' group]) ;
+name_idx = 12; 
 snr_value = 9;
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
+PrctileFilename = 'srednie18osoball.mat';
 SaveFlag = 1;
-y_lim = [-20 25]; %make dynamical?
-leg = 0; %legend flag
+PlotPercentile = 1; prc = 0.25:0.25:0.75; % population percentiles values
 
+y_lim = [-40 25]; %make dynamical?
+leg = 1; %legend flag
+
+col = 2;
 if leg
-    col = 1; %subplot values
+    rows = 1; %subplot values
     %figure('Position',[200 100 850 450])
 else
-    col = 2;
+    rows = 2;
 end    
 
 [a, b, c, short, long, longest] = wczytanie(directory_name);
@@ -52,17 +58,31 @@ f = data.sfe.fp;
 pos = 1;
 figure('Name', name)
 % suptitle({['Quick SFOAE, ' 'Subject ID: ' num2str(name_idx)],''})
-
+ear_id = 1;
 
 for d=['L','R'] 
-    subplot(2,col,pos);
+    subplot(rows,col,pos);
+    if PlotPercentile == 1
+        load(PrctileFilename)
+        hold on
+        quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        hold on
+%         q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
+%         q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        ear_id = ear_id + 1;
+    end
     p0 = plot(f,general.(d)','-.'); %title(['"' d '" ear']);
-    co = get(gca,'ColorOrder'); % Initial
-    set(groot,'defaultAxesColorOrder',co(1:el.(d),:)) 
+    fig = gcf;
+    ax = gca;
+    ax.ColorOrderIndex = 1;
+%     co = get(gca,'ColorOrder'); % Initial
+%     set(fig,'defaultAxesColorOrder',co(1:el.(d),:)) 
     %set(gca, 'Color', co,'NextPlot', 'replacechildren')
     % Change to new colors.
 
-%     xlabel('Frequency [Hz]')
+%     
     xlim([800 4200]); ylim(y_lim)
     hold on
     p1 = plot(f,noise_lev.(d)',':');
@@ -76,19 +96,26 @@ for d=['L','R']
     den = length(noise_idx.(d)(:));
     p = den-s;
     fr.(d) = 100* p/den ;
-    text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(fr.(d)) ' %'])
-    if leg
-        clear trial_names Lnf_names temp
-%         leg_names = {'a'};
-        for i=1:el.(d)
-            leg_names{i} = ['trial ' num2str(i)];
-            leg_names{i+el.(d)} = ['Lnf_{tot} ' num2str(i)];
+    text(900, y_lim(1)+4, ['passed: ' num2str(p) '/' num2str(den) ' = '...
+        num2str(fr.(d)) ' %'])  
+    
+    
+    if leg && strcmp(d,'L')
+        clear trial_names Lnf_names temp idx
+        idx0 = 0;
+        idx1 = el.(d);
+        if PlotPercentile == 1
+            leg_names{1} = '1st and 3rd quantile (A)';
+            idx0 = idx0 + 1;
         end
-        leg_names{2*el.(d)+1} = 'Mean';
-        legend(leg_names,'Location', 'westoutside')
+        for i=1:idx1
+            leg_names{i+idx0} = ['trial ' num2str(i)];
+            leg_names{i+idx0+el.(d)} = ['Lnf_{tot} ' num2str(i)];
+        end
+        leg_names{2*el.(d)+1+idx0} = 'Mean';
+%         legend(leg_names,'Location', 'westoutside')
     elseif ~leg %&& d=='L'
-        legend(p2, 'Location','northwest')
+        legend(p2, 'Location','northeast')
 %     else
 %         legend(pl, 'Location','southwest')
     end
@@ -97,17 +124,30 @@ for d=['L','R']
 
     if ~leg
         pos = pos+1;
-        subplot(2,col,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
+        subplot(rows,col,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
 %         title(['All Quick SFOAE, "' d '" ear'])
 %        xlabel('Frequency [Hz]')
     end
     pos = pos+1;
 end
-hold off
+% hold off
+if ~leg
     [ax,h1]=suplabel('Frequency [Hz]','x',[.075 .1 .85 .85]);
     [ax,h2]=suplabel('OAE level [dB SPL]','y');
-    [ax,h3]=suplabel(['Quick SFOAE, ' 'Subject ID: ' num2str(name_idx)] ,'t');
-    set(h3,'FontSize',12) 
+    [ax,h3]=suplabel(['Quick SFOAE, ' 'subject ID: ' num2str(name_idx) group] ,'t');
+    set(h3,'FontSize',12)
+else
+    subplot(1,2,1)
+    xlabel('Frequency [Hz]')
+    ylabel('OAE level [dB SPL]')
+    title('"L" ear') 
+    
+    subplot(1,2,2)
+    xlabel('Frequency [Hz]')
+    ylabel('OAE level [dB SPL]')
+    title('"R" ear')
+    suptitle(['Quick SFOAE, ' 'subject ID: ' num2str(name_idx) group])
+end
 %% saving
 if leg && SaveFlag
     print([directory_name 'images\short_SFOAE_trials_' name], '-dpng', '-noui')
