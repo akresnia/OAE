@@ -1,11 +1,12 @@
 clear all
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
-    'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-    'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
-    'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
+    'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
+    'Alicja_K','Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
+    'Monika_W','Teresa_B', 'Jedrzej_R'...
     };
-name_idx = 19; 
+names2 = {'Alicja_B','Ula_M', 'Urszula_O'};
+name_idx = 1; 
 snr_value = 9;
 SaveFlag = 0;
 y_lim = [-15 20];
@@ -97,6 +98,6 @@ if SaveFlag
 end
 
 %% Reproducibility analysis
-frac = (fr.L + fr.R)/2
+frac = (fr.L + fr.R)/2;
 InterTrialPlot(m, gen_mean_clean, data.sfe.fclist, el, 'LongSFOAE', name,SaveFlag)
 StdPlot(data.sfe.fclist, gen_mean_clean, 'Long SFOAE',name,SaveFlag)
