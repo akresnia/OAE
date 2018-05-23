@@ -4,17 +4,18 @@ clear all
 %be compared
 
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
-    'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-    'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
-    'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
+    'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
+    'Alicja_K','Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
+    'Monika_W','Teresa_B','Jedrzej_R'...
     };
-name_idx = 19; 
+names2 = {'Alicja_B','Ula_M','Urszula_O'};
+name_idx = 1; 
 snr_value = 9;
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 SaveFlag = 1;
 y_lim = [-20 25]; %make dynamical?
-leg = 1; %legend flag
+leg = 0; %legend flag
 
 if leg
     col = 1; %subplot values
@@ -38,7 +39,8 @@ for i=1:a-1 %for each trial in dataset
     for d=['L','R']
         if short{i,1}==d
             general.(d)(el.(d)+1,:)= y; %data in columns
-            noise_idx.(d)(el.(d)+1,:) = (data.eval.snr<snr_value); %idcs in rows
+            noise_idx.(d)(el.(d)+1,:) = (data.eval.snr<snr_value); %idcs in columns
+            noise_lev.(d)(el.(d)+1,:) = data.sfe.Lnf_total;
             el.(d) = el.(d) + 1;
         end
     end
@@ -49,14 +51,23 @@ clear i j d
 f = data.sfe.fp;
 pos = 1;
 figure('Name', name)
-suptitle(['Patient ID: ' num2str(name_idx)])
+% suptitle({['Quick SFOAE, ' 'Subject ID: ' num2str(name_idx)],''})
+
 
 for d=['L','R'] 
     subplot(2,col,pos);
-    plot(f,general.(d)','-.'); title(['Quick SFOAE, "' d '" ear'])
-    xlabel('Frequency [Hz]')
+    p0 = plot(f,general.(d)','-.'); %title(['"' d '" ear']);
+    co = get(gca,'ColorOrder'); % Initial
+    set(groot,'defaultAxesColorOrder',co(1:el.(d),:)) 
+    %set(gca, 'Color', co,'NextPlot', 'replacechildren')
+    % Change to new colors.
+
+%     xlabel('Frequency [Hz]')
     xlim([800 4200]); ylim(y_lim)
     hold on
+    p1 = plot(f,noise_lev.(d)',':');
+    p2 = plot(f,mean(general.(d)),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
+
     freqs = repmat(f,el.(d),1);
     scatter(freqs(noise_idx.(d)), general.(d)(noise_idx.(d)), 30, 'r','DisplayName', 'Failed')
     scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d))', 30, 'g', 'filled', 'DisplayName', 'Passed')
@@ -67,28 +78,36 @@ for d=['L','R']
     fr.(d) = 100* p/den ;
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
         num2str(fr.(d)) ' %'])
-
-    pl = plot(f,mean(general.(d)),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
     if leg
-        legend('Location', 'westoutside')
+        clear trial_names Lnf_names temp
+%         leg_names = {'a'};
+        for i=1:el.(d)
+            leg_names{i} = ['trial ' num2str(i)];
+            leg_names{i+el.(d)} = ['Lnf_{tot} ' num2str(i)];
+        end
+        leg_names{2*el.(d)+1} = 'Mean';
+        legend(leg_names,'Location', 'westoutside')
     elseif ~leg %&& d=='L'
-        legend(pl, 'Location','northwest')
+        legend(p2, 'Location','northwest')
 %     else
 %         legend(pl, 'Location','southwest')
     end
-    ylabel('Level [dB SPL]')
+    ylabel(['"' d '" ear'])
 %     hold off
 
     if ~leg
         pos = pos+1;
-        subplot(2,2,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
-        title(['All Quick SFOAE, "' d '" ear'])
-%         xlabel('Frequency [Hz]')
+        subplot(2,col,pos); boxplot(general.(d),round(f,-1)); ylim(y_lim)
+%         title(['All Quick SFOAE, "' d '" ear'])
+%        xlabel('Frequency [Hz]')
     end
     pos = pos+1;
 end
 hold off
-
+    [ax,h1]=suplabel('Frequency [Hz]','x',[.075 .1 .85 .85]);
+    [ax,h2]=suplabel('OAE level [dB SPL]','y');
+    [ax,h3]=suplabel(['Quick SFOAE, ' 'Subject ID: ' num2str(name_idx)] ,'t');
+    set(h3,'FontSize',12) 
 %% saving
 if leg && SaveFlag
     print([directory_name 'images\short_SFOAE_trials_' name], '-dpng', '-noui')
