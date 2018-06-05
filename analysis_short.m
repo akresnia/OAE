@@ -1,4 +1,4 @@
-function [frac,R2, mean_SFs] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
+function [frac,R2, mean_SFs_clean] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -39,7 +39,7 @@ for i=1:a-1 %for each trial in dataset
     y = real(20*log10(data.sfe.dP));
     for d=['L','R']
         if short{i,1}==d
-            general.(d)(el.(d)+1,:)= y; %data in columns
+            general.(d)(el.(d)+1,:)= y; %data in rows
             noise_idx.(d)(el.(d)+1,:) = (data.eval.snr<snr_value); %idcs in rows
             el.(d) = el.(d) + 1;
         end
@@ -56,7 +56,7 @@ for d=['L','R']
     subplot(2,col,pos);
     if nargin == 7
         disp('a')
-        load(PrctileFilename)
+        load(PrctileFilename) %here the interesting variable is mean_sfs
         hold on
         quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
         fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
@@ -74,8 +74,12 @@ for d=['L','R']
     freqs = repmat(f,el.(d),1);
     scatter(freqs(noise_idx.(d)), general.(d)(noise_idx.(d)), 30, 'r','DisplayName', 'Failed')
     scatter(freqs(~noise_idx.(d)), general.(d)(~noise_idx.(d)), 30, 'g', 'filled', 'DisplayName', 'Passed')
+    
+    %option 'clean'
+    general_clean.(d) = NaN(size(general.(d)));
+    general_clean.(d)(~noise_idx.(d)) = general.(d)(~noise_idx.(d));
+    
     % fraction of measurements that pass snr criterion
-
     s = sum(noise_idx.(d)(:));
     den = length(noise_idx.(d)(:));
     p = den-s;
@@ -83,7 +87,8 @@ for d=['L','R']
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
         num2str(fr.(d)) ' %'])
     mean_SFs.(d) = mean(general.(d));
-    pl = plot(f,mean_SFs.(d),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean');
+    mean_SFs_clean.(d) = mean(general_clean.(d),'omitnan');
+    pl = plot(f,mean_SFs.(d),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean ("all")');
     if leg
         legend('Location', 'westoutside')
     elseif ~leg %&& d=='L'
@@ -101,7 +106,7 @@ for d=['L','R']
         title(['All Quick SFOAE, "' d '" ear'])
 %         xlabel('Frequency [Hz]')
     end
-    suptitle(['Patient ID: ' num2str(name_idx)])
+    suptitle(['Subject ID: ' num2str(name_idx)])
     pos = pos+1;
 end
 hold off
@@ -117,8 +122,8 @@ end
 frac = (fr.L + fr.R)/2;
 
 if StdInterTrialPlotFlag
-    InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name, name_idx,SaveFlag);
+    InterTrialPlot(n, general_clean, data.sfe.fp, el, 'Short SFOAE', name, name_idx,SaveFlag);
 end
 
-[~, R2] =StdPlot(data.sfe.fp, general, 'Short SFOAE',name, name_idx,SaveFlag, StdInterTrialPlotFlag); 
+[~, R2] =StdPlot(data.sfe.fp, general_clean, 'Short SFOAE',name, name_idx,SaveFlag, StdInterTrialPlotFlag); 
 end
