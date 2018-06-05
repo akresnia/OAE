@@ -2,10 +2,10 @@
 %% parameters
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
-    'Alicja_K','Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
-    'Monika_W','Teresa_B', 'Jedrzej_R'...
+    'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
+    'Teresa_B', 'Jedrzej_R'
     };
-names2 = {'Alicja_B','Ula_M', 'Urszula_O'};
+names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
 sex = [1,1,1,1,1,...
     0,0,0,0,1,...
     1,0,1,1,1,...
@@ -26,12 +26,12 @@ R2_sfs=NaN(1,length(names)); %R2 in SFOAE short
 R2_sfl=NaN(1,length(names)); %R2 in SFOAE long
 R2_dp=NaN(1,length(names)); %R2 in DPOAE
 
-mean_sfs=NaN(2,4,length(names)); % in SFOAE short
+mean_sfs=NaN(2,4,length(names)); % clean mean in SFOAE short
 mean_sfl=NaN(2,5,length(names)); % in SFOAE long
 mean_dp=NaN(2,6,length(names)); % in DPOAE
 
 %% OAE analysis
-for name_idx = 1:length(names)
+for name_idx = 2:length(names)
     name = char(names(name_idx));
     %% short SFOAE 
     [fr,R2,  m_SFs] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialPlotFlag); %fraction of passes in %
@@ -43,7 +43,7 @@ for name_idx = 1:length(names)
     
     
     %% long SFOAE
-    option = 'all'; % options: 'clean', 'max_snr', 'all'
+    option = 'clean'; % options: 'clean', 'max_snr', 'all'
     [fr,R2, m_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag); %fraction of passes in 
     frac_sfl(name_idx) = fr; 
     R2_sfl(name_idx) = R2;
@@ -62,10 +62,9 @@ end
 % save(['srednie' num2str(name_idx) 'osob' option '.mat'], 'mean_dp','mean_sfl','mean_sfs');
 % save(['R2' num2str(name_idx) 'osob' option '.mat'], 'R2_dp','R2_sfl', 'R2_sfs', 'names');
 % save(['fr' num2str(name_idx) 'osob' option '.mat'], 'frac_dp','frac_sfl', 'frac_sfs','names'); 
+
 %rozrzut bez sumy po fi, sprawdziæ long clean i all, porownac plec?,
 %narysowac tez srednie z 1 lub 2 sigma
-% zrobic serie pdfow z audiometriami, emisjami i spontanicznymi, sfoae ze
-% strony mimosa acoustics
 
 %% plotting histogram of R2
 nbins = 15;
