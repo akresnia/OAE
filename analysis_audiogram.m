@@ -1,6 +1,8 @@
 function [freqs,left,right] = analysis_audiogram(name, id, AudiogramsFilename)
 % MATLAB2015A
 %%% analysis of audiogram
+%%% this version does not  support plotting audiograms from beyond saved
+%%% file and the population percentiles on one plot
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 filename = ['audiom ' name '.xls'];
 prc = 0.25:0.25:0.75; % population percentiles values
@@ -13,6 +15,7 @@ switch nargin
         right = data(:,3);
     case 3
         load(AudiogramsFilename);
+        audiograms = audio;
         left = audiograms(1,:,id);
         right = audiograms(2,:,id);
 
