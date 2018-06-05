@@ -2,13 +2,6 @@ function [frac, R2, mean_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag,
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
-
-% names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
-%     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-%     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
-%     'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
-%     };
-% name_idx = 19; 
 % snr_value = 9;
 % SaveFlag = 0;
 prc = 0.25:0.25:0.75; % population percentiles values
@@ -61,8 +54,8 @@ for i=1:b-1 %for each trial in dataset
 end
 clear i j small 
 if strcmp(option, 'clean')
-    mean_SFL.L = mean(gen_mean_clean.L);
-    mean_SFL.R = mean(gen_mean_clean.R);
+    mean_SFL.L = mean(gen_mean_clean.L,'omitnan');
+    mean_SFL.R = mean(gen_mean_clean.R,'omitnan');
 elseif strcmp(option, 'max_snr')
     mean_SFL.L = mean(gen_max_snr.L);
     mean_SFL.R = mean(gen_max_snr.R);
@@ -70,6 +63,7 @@ else
     mean_SFL.L = mean(gen_mean.L);
     mean_SFL.R = mean(gen_mean.R);
 end
+
 %% plotting
 % grean dots are mean values in clusters calculated from measurements with
 % good snr
@@ -88,7 +82,7 @@ else
     error('wrong option')
 end
 
-figure('Name', ['Long SFOAE' name])
+figure('Name', ['Cluster SFOAE' name])
 ear_id = 1;
 for d=['L','R'] 
     hold on
@@ -132,7 +126,7 @@ end
 
 %% boxplots
 subplot(2,2,2); boxplot(gen_mean.L,round(data.sfe.fclist,-1)); ylim(y_lim)
-suptitle(['Long SFOAE, ID: ' num2str(name_idx)])
+suptitle(['Cluster SFOAE, ID: ' num2str(name_idx)])
 title('Means of all pts in clusters')
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1)); ylim(y_lim)
@@ -147,8 +141,8 @@ end
 frac = (fr.L + fr.R)/2;
 
 if StdInterTrialPlotFlag
-    InterTrialPlot(m, dataopt, f, el, ['Long SFOAE ' titopt], name, name_idx,SaveFlag)
+    InterTrialPlot(m, dataopt, f, el, ['Cluster SFOAE ' titopt], name, name_idx,SaveFlag)
 end
-[~, R2] =StdPlot(f, dataopt, ['Long SFOAE ' titopt],name,name_idx,SaveFlag, StdInterTrialPlotFlag);
+[~, R2] =StdPlot(f, dataopt, ['Cluster SFOAE ' titopt],name,name_idx,SaveFlag, StdInterTrialPlotFlag);
 end
 
