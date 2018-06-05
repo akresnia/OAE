@@ -11,7 +11,7 @@ for i = 1:m
     st_dev.(d)(i)  = std(data.(d)(:,i), 'omitnan');
     end
 end
-R2 = (sum(st_dev.L)+sum(st_dev.R))/m;
+R2 = (sum(st_dev.L.^2)+sum(st_dev.R.^2))/m;
 
 if PlotFlag
     figure('Name', ['std' type Name])
