@@ -1,4 +1,4 @@
-function [frac, R2, mean_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
+function [fr, R2, R2_ear, mean_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
@@ -109,7 +109,7 @@ for d=['L','R']
     scatter(freqs(~noise_clu.(d)), dataopt.(d)(~noise_clu.(d))', 30, 'g', 'filled')
     
     pl = plot(f, mean(gen_mean.(d), 'omitnan'),'r', 'LineWidth', 1.5, ...
-    'DisplayName', 'Noisy Mean');
+    'DisplayName', 'Mean ("all")');
     legend(pl)
     xlabel('Frequency [Hz]'); ylabel('SFOAE [dB SPL]'); 
     xlim([800 4200]); ylim(y_lim)
@@ -143,6 +143,6 @@ frac = (fr.L + fr.R)/2;
 if StdInterTrialPlotFlag
     InterTrialPlot(m, dataopt, f, el, ['Cluster SFOAE ' titopt], name, name_idx,SaveFlag)
 end
-[~, R2] =StdPlot(f, dataopt, ['Cluster SFOAE ' titopt],name,name_idx,SaveFlag, StdInterTrialPlotFlag);
+[~, R2,R2_ear] =StdPlot(f, dataopt, ['Cluster SFOAE ' titopt],name,name_idx,SaveFlag, StdInterTrialPlotFlag);
 end
 

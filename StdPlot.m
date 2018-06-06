@@ -1,4 +1,4 @@
-function [st_dev,R2] = StdPlot (freqs, data, type, Name, Name_idx, SaveFlag, PlotFlag)
+function [st_dev,R2,R2_ear] = StdPlot (freqs, data, type, Name, Name_idx, SaveFlag, PlotFlag)
 %%% data: rows - measurements, columns - frequencies 
 %%% st_dev: std of measurements for each frequency
 %%% R2: sum of std over freqs and ears, normalised with number of measured
@@ -11,8 +11,8 @@ for i = 1:m
     st_dev.(d)(i)  = std(data.(d)(:,i), 'omitnan');
     end
 end
-R2 = (sum(st_dev.L.^2)+sum(st_dev.R.^2))/m;
-
+R2 = (sum(st_dev.L.^2)+sum(st_dev.R.^2))/(2*m);
+R2_ear = [sum(st_dev.L.^2)/m , sum(st_dev.R.^2)/m];
 if PlotFlag
     figure('Name', ['std' type Name])
     hold on

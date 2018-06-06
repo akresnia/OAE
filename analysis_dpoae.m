@@ -1,4 +1,4 @@
-function [frac,R2, mean_DP] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag, PrctileFilename)
+function [fr,R2, R2_ear, mean_DP_clean] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag, PrctileFilename)
 % names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
 %     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
 %     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
@@ -39,10 +39,10 @@ f2s = prep(data(1:6,6));
 
 if f2_on_xaxis
     DPfreqs = f2s;
-    xlab = 'f2 Frequency [Hz]';
+    xlab = 'Frequency (f_2) [Hz]';
 else
     DPfreqs = 2*f1s - f2s;
-    xlab = '2*f1 - f2 Frequency [Hz]';
+    xlab = 'Frequency (2*f_1 - f_2) [Hz]';
 end
 % DP1.L = zeros(1,m);
 % DP1.R = zeros(1,m);
@@ -63,9 +63,12 @@ for d=['L','R']
     ear_id = cell2mat(data(:,4))== d; %logical table with ones for current ear
     pass_id.(d) = Pass_id(ear_id);
     DP1.(d) = DP1Col(ear_id);
-    DP1.(d) = reshape(DP1.(d), [m,l.(d)])';%data in rows, starting from f2=6000
+    DP1.(d) = reshape(DP1.(d), [m,l.(d)])';%transposed, so data in rows, starting from f2=6000
     pass_id.(d) = reshape(pass_id.(d), [m,l.(d)])';
+    DP1_clean.(d) = DP1.(d);
+    DP1_clean.(d)(~pass_id.(d)) = NaN; 
     mean_DP.(d) = mean(DP1.(d));
+    mean_DP_clean.(d) = mean(DP1_clean.(d), 'omitnan');
 
 end
 
@@ -73,24 +76,24 @@ end
 figure('Name', ['DP ' name])
 pos = 1; 
 y_lim = [-23 23];
-ear_id = 1;
+ear_idx = 1;
 for d=['L','R']
     subplot(2,1,pos)
     if nargin == 6
-        disp('a')
         load(PrctileFilename)
         hold on
-        quant = quantile(squeeze(mean_dp(ear_id,:,:))',prc); %1st column is left ear
-        fill([DPfreqs' DPfreqs(end:-1:1)'],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
-        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        quant = quantile(squeeze(mean_dp(ear_idx,:,:))',prc); %1st column is left ear
+        fill([DPfreqs' DPfreqs(end:-1:1)'],[quant(1,:) quant(3,end:-1:1)],[.92 .92 .92],'EdgeColor', 'none') %// light grey
+        %q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
         %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
-        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
-        ear_id = ear_id + 1;
+        %q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        ear_idx = ear_idx + 1;
     end
     plot(DPfreqs, DP1.(d)','-.'); 
     title(['DPOAE "' d '" ear, ID: ' num2str(name_idx)]); 
-    ylabel('DP1 [dB SPL]')
+    ylabel('DP1 [dB SPL]'); xlabel(xlab);
     xlim([900 6100]); ylim(y_lim);
+    
     freqs = repmat(DPfreqs',l.(d),1);
     scatter(freqs(pass_id.(d)), DP1.(d)(pass_id.(d)), 30, 'g', 'filled')
     scatter(freqs(~pass_id.(d)), DP1.(d)(~pass_id.(d)), 30, 'r')
@@ -123,5 +126,5 @@ if StdInterTrialPlotFlag
     InterTrialPlot(m, DP1, DPfreqs, l, 'DPOAE', name, name_idx, SaveFlag);
 end
 % %RatioPlot(DPfreqs,DP1s)
-[~, R2] =StdPlot(DPfreqs,DP1, 'DPOAE',name, name_idx, SaveFlag, StdInterTrialPlotFlag);
+[~, R2, R2_ear] =StdPlot(DPfreqs,DP1_clean, 'DPOAE',name, name_idx, SaveFlag, StdInterTrialPlotFlag);
 end
