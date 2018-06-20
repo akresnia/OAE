@@ -1,4 +1,4 @@
-function [fr, R2, R2_ear, mean_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
+function [fr,frf, R2, R2_ear, mean_SFL, gen_mean_clean] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
@@ -17,6 +17,8 @@ m = 5; %length(data.sfe.fclist)
 
 el.R = 0;
 el.L = 0;
+frf.L = NaN(1,m);
+frf.R = NaN(1,m);
 ears = ['L';'o';'R'];
 
 %% creating matrices for plotting
@@ -119,6 +121,13 @@ for d=['L','R']
     den = length(noise_idx.(d)(:));
     p=den-s;
     fr.(d) = 100* p/den ;
+    
+    for fi = 1:m %frequency analysis
+        denf = el.(d)*m; %denominator - #of measurements
+        pf = denf - sum(sum(noise_idx.(d)(:, 5*fi-4:5*fi))); %number of passes
+       frf.(d)(fi) = 100*pf/denf; 
+    end
+    
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
         num2str(fr.(d)) ' %'])
     hold off

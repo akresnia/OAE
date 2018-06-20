@@ -25,6 +25,10 @@ fr_sfs=NaN(1,2*length(names)); %fraction of passes in SFOAE short for every ear
 fr_sfl=NaN(1,2*length(names)); %fraction of passes in SFOAE long
 fr_dp=NaN(1,2*length(names)); %fraction of passes in DPOAE
 
+frf_sfs=NaN(2*length(names),4); %fraction  for freqs in SFOAE short for every ear
+frf_sfl=NaN(2*length(names),4); %fraction for freqs in SFOAE long
+frf_dp=NaN(2*length(names),4); %fraction for freqs in DPOAE
+
 %R2 - sum over trials,freqs,ears of std(fi), divided by len(freqs)
 R2_sfs=NaN(1,length(names)); %R2 in SFOAE short
 R2_sfl=NaN(1,length(names)); %R2 in SFOAE long
@@ -42,21 +46,25 @@ mean_dp=NaN(2,6,length(names)); % in DPOAE
 for name_idx = 1:length(names)
     name = char(names(name_idx));
     %% short SFOAE 
-    [fr,R2, R2_ear,  m_SFs] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialPlotFlag); %fraction of passes in %
-    fr_sfs(2*name_idx-1) = fr.L; 
-    fr_sfs(2*name_idx) = fr.R; 
-    R2_sfs(name_idx) = R2; 
-    R2_ear_sfs(2*name_idx-1:2*name_idx) = R2_ear; 
-    mean_sfs(1,:,name_idx) = m_SFs.L;
-    mean_sfs(2,:,name_idx) = m_SFs.R;
-    clear fr R2
-    
+%     [fr,frf,R2, R2_ear,  m_SFs, dat] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialPlotFlag); %fraction of passes in %
+%     fr_sfs(2*name_idx-1) = fr.L; 
+%     fr_sfs(2*name_idx) = fr.R; 
+%     frf_sfs(2*name_idx-1,:) = frf.L; 
+%     frf_sfs(2*name_idx,:) = frf.R; 
+%     R2_sfs(name_idx) = R2; 
+%     R2_ear_sfs(2*name_idx-1:2*name_idx) = R2_ear; 
+%     mean_sfs(1,:,name_idx) = m_SFs.L;
+%     mean_sfs(2,:,name_idx) = m_SFs.R;
+%     clear fr R2
+%     
     
     %% long SFOAE
     option = 'clean'; % options: 'clean', 'max_snr', 'all'
-    [fr,R2,R2_ear, m_SFL] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag); %fraction of passes in 
+    [fr,frf,R2,R2_ear, m_SFL, dat] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag); %fraction of passes in 
     fr_sfl(2*name_idx-1) = fr.L; 
     fr_sfl(2*name_idx) = fr.R; 
+    frf_sfl(2*name_idx-1,:) = frf.L; 
+    frf_sfl(2*name_idx,:) = frf.R; 
     R2_sfl(name_idx) = R2;
     R2_ear_sfl(2*name_idx-1:2*name_idx) = R2_ear; 
     mean_sfl(1,:,name_idx) = m_SFL.L;
@@ -64,7 +72,7 @@ for name_idx = 1:length(names)
     clear fr R2
 
     %% DPOAE
-    [fr,R2,R2_ear, m_DP] = analysis_dpoae(name, name_idx,sndiff,SaveFlag, StdInterTrialPlotFlag,'srednie18osobclean.mat'); %fraction of passes in 
+    [fr,R2,R2_ear, m_DP, dat] = analysis_dpoae(name, name_idx,sndiff,SaveFlag, StdInterTrialPlotFlag,'srednie18osobclean.mat'); %fraction of passes in 
     fr_dp(2*name_idx-1) = fr.L; 
     fr_dp(2*name_idx) = fr.R;
     R2_dp(name_idx) = R2;
@@ -105,6 +113,12 @@ grid('on')
 figure;
 boxplot([(R2_ear_sfs.^0.5)',(R2_ear_sfl.^0.5)',(R2_ear_dp.^0.5)'],'notch','on','labels',{'SFOAE quick','SFOAE cluster', 'DPOAE'}); ylabel('R1 value [dB SPL]');
 grid('on')
+[mu,muerr,N,std,min,max,meanci] =grpstats(R2_ear_dp.^0.5,[],...
+    {'mean','sem','numel','std','min','max','meanci'});
+ala = R2_ear_sfl.^0.5;
+h = kstest((ala-mean(ala))/std(ala)); %return 0 for all R2_ sets
+
+
 %% plotting histogram of fraq
 nbins =10;
 Title = 'Histogram of fraction of measurements with "pass"';

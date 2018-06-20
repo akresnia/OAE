@@ -1,4 +1,4 @@
-function [fr,R2,R2_ear, mean_SFs_clean] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
+function [fr,frf, R2,R2_ear, mean_SFs_clean, general_clean] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -30,6 +30,8 @@ end
 n = 4; %length(data.sfe.fp)
 general.L = zeros(1,n); %zmieniæ na dane w wierszach? naprawiæ freqs
 general.R = zeros(1,n);
+frf.L = NaN(1,n);
+frf.R = NaN(1,n);
 
 el.R = 0;
 el.L = 0;
@@ -81,9 +83,15 @@ for d=['L','R']
     
     % fraction of measurements that pass snr criterion
     s = sum(noise_idx.(d)(:));
-    den = length(noise_idx.(d)(:));
+    den = length(noise_idx.(d)(:)); %denominator
     p = den-s;
     fr.(d) = 100* p/den ;
+    for fi = 1:length(f) %frequency analysis
+        denf = length(noise_idx.(d)(:,fi));
+        pf = denf - sum(noise_idx.(d)(:,fi)); %number of passes
+       frf.(d)(fi) = 100*pf/denf; 
+    end
+    
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
         num2str(fr.(d)) ' %'])
     mean_SFs.(d) = mean(general.(d));
