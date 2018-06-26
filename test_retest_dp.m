@@ -77,6 +77,8 @@ singlefit_diff = NaN(length(names),30,6);
 control = 0; di2 = ''; ea2 = 0; ml_old = 0; sl_old = 0;
 ml=0; %id of multiplefit entries
 sl = 0; %id of singlefit entries
+br = 0;
+multj = NaN(1,2);
 for i=1:length(names)
     name = char(names(i));
 %     for ea = 1:2
@@ -94,78 +96,36 @@ for i=1:length(names)
             sl = sl+1;
             singlefit_diff(i,sl,:) = OAE_dp2(i,j,:) - OAE_dp2(i,j,:);
 %                 disp([num2str(ea), name, num2str(letemp)])
-            if blc>1
-                for trid=1:j-1
-                    ml=ml+1;
-                    multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:)...
-                        - OAE_dp2(i,trid,:);
-                    disp(['ml1' num2str(j+1), num2str(trid)])
-                end
-            end
+
         else
-            disp([num2str(ea), name, num2str(trc)])
-            for trid=1:trc
-                ml=ml+1;
-                multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j-trid+1,:);
-                disp(['ml2' num2str(j+1), num2str(j-trid+1)])
-            end
-            trc = 1;
-            blc = blc + 1;
-        end
-%             t1 = datetime(temp{j}, 'InputFormat', 'yy-MM-dd HH:mm:ss');
-%             t2 = datetime(temp{j+1}, 'InputFormat', 'yy-MM-dd HH:mm:ss');
-%             [h, m, s] = hms(diff([t1,t2]));
-%             if m>15 || h>0 % more than 15 min = change of ears
-%                 di = [num2str(ea), name]; 
-%                 ea1 = ea;
-%                 if strcmp(di,di2) || ea1==ea2
-%                     warning(['Check ' name ' ' num2str(ea) '!'])
-%                 end
-%                 di2=di; ea2 = ea1;
-%                 disp([num2str(ea), name])%, temp{j}, ',',temp{j+1}])
-%                 control = control+1;
-%                 if strcmp(name,'Agnieszka_K')==0 &&...
-%                         strcmp(name,'Krzysztof_B')==0 %she had 6 blocks, as
-%                 
-%                     fb = j; %length of first block
-%                     sb = letemp-j; %length of the second block
-%                     for fi=1:j
-%                         for si=1:sb
-%                             ml=ml+1;
-%                             multifit_diff(i,ea,ml,:) = OAE_dp(i,ea,:,j+si)...
-%                                 - OAE_dp(i,ea,:,fi);
-%                         end 
-%                     end
-% %                 else %for Krzysztof 3 blocks for both ears, j = 1,3 and 2,3
-% %                     %disp([num2str(letemp) 'Krzysztof: j' num2str(j)])
-% %                     if j==1 
-% %                         pairs = [[1,2];[1,3];[1,4];[2,4];[3,4]];
-% %                     elseif j == 2 
-% %                         pairs = [[1,3];[1,4];[2,3];[2,4];[3,4]];
-% %                     end
-% %                     for pa = 1:length(pairs)
-% %                         id1 = pairs(pa,1);
-% %                         id2 = pairs(pa,2);
-% %                         ml=ml+1;
-% %                         multifit_diff(i,ea,ml,:) = OAE_dp(i,ea,:,id1)...
-% %                             - OAE_dp(i,ea,:,id2);   
-% %                     end
-%                 end
-%             else
-%                 sl = sl+1;
-%                 singlefit_diff(i,ea,j,:) = OAE_dp(i,ea,:,j+1) - OAE_dp(i,ea,:,j);
-% %                 disp([num2str(ea), name, num2str(letemp)])
+            br = br+1; %break between trials
+            disp([num2str(ea), name, num2str(letemp)])
+            multj(br) = j;
+%             for trid=1:trc
+%                 ml=ml+1;
+%                 multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j-trid+1,:);
+%                 disp(['ml2' num2str(j+1), num2str(j-trid+1)])
 %             end
-%         end
-%         if ml_old<ml
-%             ml
-%             ml_old = ml;
-%         end
-%         if sl_old<sl
-%             sl
-%             sl_old = sl;
-%         end
+%             trc = 1;
+%             blc = blc + 1;
+        end
     end
+        idc = NaN(length(multj)+1,4);
+        idc(1,1:multj(1)) = 1:multj(1);
+        for ji = 2:length(multj)
+            idc(ji,1:multj(ji)-multj(ji-1)) = multj(ji-1)+1:multj(ji);
+        end
+        idc(length(multj)+1,1:letemp-multj(end)) = multj(end)+1:letemp; 
+        %skorzystaj z indeksów uszu
+        L_id  = 1:letemp;
+        L_id = L_id(~R_ear_id);
+        for box = 1:length(multj)
+            box1 = idc(box, :);
+            
+            ml=ml+1;
+            multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j-trid+1,:);
+        end
+    
 end
 save('testretest_dp_17osobclean.mat', 'multifit_diff', 'singlefit_diff')
 single_all = reshape(singlefit_diff,1,[]);
