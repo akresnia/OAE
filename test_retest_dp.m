@@ -65,7 +65,7 @@ load('OAE_dp2.mat'); %OAE_dp2
 % end
 
 
-load('OAE17osobclean.mat')
+% load('OAE17osobclean.mat')
 % OAE vectors (clean):
 % OAE_quick = NaN(length(names),2, 4, 6); %subjects x ears x freqs x trials
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
@@ -74,58 +74,57 @@ ears = ['L','R'];
 multifit_diff = NaN(length(names),32,6); %names x ears x entries x freqs
 singlefit_diff = NaN(length(names),30,6);
 
-control = 0; di2 = ''; ea2 = 0; ml_old = 0; sl_old = 0;
+control = 0; di2 = ''; ea2 = 0; 
 ml=0; %id of multiplefit entries
 sl = 0; %id of singlefit entries
-br = 0;
+
 multj = NaN(1,2);
 for i=1:length(names)
     name = char(names(i));
-%     for ea = 1:2
-
+    br = 0;
     trc = 1; %count of trials in a block
-    blc = 1; %count of blocks
-%         d = ears(ea);
     R_ear_id = cell2mat(times_dp.(name).ears)== 'R';
-%         temp = times_dp.(name).values(ear_id);
     letemp = length(times_dp.(name).values); %different than in SFOAE!
     for j=1:letemp-1
         ea = R_ear_id(j)+1; %1 = L, 2 = R
         if R_ear_id(j)==R_ear_id(j+1)
             trc = trc+1;
             sl = sl+1;
-            singlefit_diff(i,sl,:) = OAE_dp2(i,j,:) - OAE_dp2(i,j,:);
-%                 disp([num2str(ea), name, num2str(letemp)])
+            singlefit_diff(i,sl,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j,:);
+                disp([num2str(ea), name, num2str(letemp)])
 
         else
+            control = control+1;
             br = br+1; %break between trials
-            disp([num2str(ea), name, num2str(letemp)])
+%             disp([num2str(ea), name, num2str(letemp)])
             multj(br) = j;
-%             for trid=1:trc
-%                 ml=ml+1;
-%                 multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j-trid+1,:);
-%                 disp(['ml2' num2str(j+1), num2str(j-trid+1)])
-%             end
-%             trc = 1;
-%             blc = blc + 1;
         end
     end
-        idc = NaN(length(multj)+1,4);
-        idc(1,1:multj(1)) = 1:multj(1);
-        for ji = 2:length(multj)
-            idc(ji,1:multj(ji)-multj(ji-1)) = multj(ji-1)+1:multj(ji);
+    %skorzystaj z indeksów uszu
+    L_id  = 1:letemp;
+    R_id  = 1:letemp;
+    L_id = L_id(~R_ear_id);
+    R_id = R_id(R_ear_id);
+    for al=L_id
+        try
+        bel =L_id(L_id>multj(find(multj>al,1)));
+            for bum=bel
+%                     ['id1 ' num2str(al) ' id2 ' num2str(bum)];
+                ml=ml+1;
+               multifit_diff(i,ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+            end
         end
-        idc(length(multj)+1,1:letemp-multj(end)) = multj(end)+1:letemp; 
-        %skorzystaj z indeksów uszu
-        L_id  = 1:letemp;
-        L_id = L_id(~R_ear_id);
-        for box = 1:length(multj)
-            box1 = idc(box, :);
-            
-            ml=ml+1;
-            multifit_diff(i,ml,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j-trid+1,:);
-        end
-    
+    end
+    for al=R_id
+        try
+        bel =R_id(R_id>multj(find(multj>al,1)));
+            for bum=bel
+%                     ['id1 ' num2str(al) ' id2 ' num2str(bum)]
+                ml=ml+1;
+               multifit_diff(i,ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+            end
+        end                       
+    end   
 end
 save('testretest_dp_17osobclean.mat', 'multifit_diff', 'singlefit_diff')
 single_all = reshape(singlefit_diff,1,[]);
