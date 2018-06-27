@@ -25,16 +25,16 @@ load('OAE17osobclean.mat')
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
 % OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs x trials
 ears = ['L','R'];
-multifit_diff = NaN(length(names),2,15,4); %names x ears x entries x freqs
-singlefit_diff = NaN(length(names),2,15,4);
+multifit_diff = NaN(115,4); %entries x freqs
+singlefit_diff = NaN(115,4);
 
 control = 0; di2 = ''; ea2 = 0; ml_old = 0;
-
+ml=0; %id of multiplefit entries
+sl = 0; %id of singlefit entries
 for i=1:length(names)
     name = char(names(i));
     for ea = 1:2
-        ml=0; %id of multiplefit entries
-        sl = 0; %id of singlefit entries
+
         d = ears(ea);
         temp = times_sfs.(name).(d);
         letemp = length(temp);
@@ -60,7 +60,7 @@ for i=1:length(names)
                     for fi=1:j
                         for si=1:sb
                             ml=ml+1;
-                            multifit_diff(i,ea,ml,:) = OAE_quick(i,ea,:,j+si) - OAE_quick(i,ea,:,fi);
+                            multifit_diff(ml,:) = OAE_quick(i,ea,:,j+si) - OAE_quick(i,ea,:,fi);
                         end 
                     end
                 else %for Joanna_K
@@ -76,19 +76,19 @@ for i=1:length(names)
                         id1 = pairs(pa,1);
                         id2 = pairs(pa,2);
                         ml=ml+1;
-                        multifit_diff(i,ea,ml,:) = OAE_quick(i,ea,:,id1) - OAE_quick(i,ea,:,id2);   
+                        multifit_diff(ml,:) = OAE_quick(i,ea,:,id1) - OAE_quick(i,ea,:,id2);   
                     end
                 end
             else
                 sl = sl+1;
-                singlefit_diff(i,ea,j,:) = OAE_quick(i,ea,:,j+1) - OAE_quick(i,ea,:,j);
+                singlefit_diff(sl,:) = OAE_quick(i,ea,:,j+1) - OAE_quick(i,ea,:,j);
 %                 disp([num2str(ea), name, num2str(letemp)])
             end
         end
-        if ml_old<ml
-            ml
-            ml_old = ml;
-        end
+%         if ml_old<ml
+%             ml
+%             ml_old = ml;
+%         end
     end
 end
 save('testretest_quick_17osobclean.mat', 'multifit_diff', 'singlefit_diff')

@@ -25,16 +25,16 @@ load('OAE17osobclean.mat')
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
 % OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs x trials
 ears = ['L','R'];
-multifit_diff = NaN(length(names),2,10,5); %names x ears x entries x freqs
-singlefit_diff = NaN(length(names),2,5,5);
+multifit_diff = NaN(110,5); %entries x freqs
+singlefit_diff = NaN(105,5);
 
 control = 0; di2 = ''; ea2 = 0; ml_old = 0; sl_old = 0;
-
+ml=0; %id of multiplefit entries
+sl = 0; %id of singlefit entries
 for i=1:length(names)
     name = char(names(i));
     for ea = 1:2
-        ml=0; %id of multiplefit entries
-        sl = 0; %id of singlefit entries
+
         d = ears(ea);
         temp = times_sfl.(name).(d);
         letemp = length(temp);
@@ -57,7 +57,7 @@ for i=1:length(names)
                     for fi=1:j
                         for si=1:sb
                             ml=ml+1;
-                            multifit_diff(i,ea,ml,:) = OAE_cluster(i,ea,:,j+si)...
+                            multifit_diff(ml,:) = OAE_cluster(i,ea,:,j+si)...
                                 - OAE_cluster(i,ea,:,fi);
                         end 
                     end
@@ -72,24 +72,24 @@ for i=1:length(names)
                         id1 = pairs(pa,1);
                         id2 = pairs(pa,2);
                         ml=ml+1;
-                        multifit_diff(i,ea,ml,:) = OAE_cluster(i,ea,:,id1)...
+                        multifit_diff(ml,:) = OAE_cluster(i,ea,:,id1)...
                             - OAE_cluster(i,ea,:,id2);   
                     end
                 end
             else
                 sl = sl+1;
-                singlefit_diff(i,ea,j,:) = OAE_cluster(i,ea,:,j+1) - OAE_cluster(i,ea,:,j);
+                singlefit_diff(sl,:) = OAE_cluster(i,ea,:,j+1) - OAE_cluster(i,ea,:,j);
 %                 disp([num2str(ea), name, num2str(letemp)])
             end
         end
-        if ml_old<ml
-            ml
-            ml_old = ml;
-        end
-        if sl_old<sl
-            sl
-            sl_old = sl;
-        end
+%         if ml_old<ml
+%             ml
+%             ml_old = ml;
+%         end
+%         if sl_old<sl
+%             sl
+%             sl_old = sl;
+%         end
     end
 end
 save('testretest_cluster_17osobclean.mat', 'multifit_diff', 'singlefit_diff')

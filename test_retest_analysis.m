@@ -28,43 +28,64 @@ m_dp = m_dps_dp.multifit_diff;
 s_dp = m_dps_dp.singlefit_diff;
 
 %% plotting
-% y_lim = [-10 115];
+y_lim = [-20 20];
 figure()
 subplot(2,2,1)
-boxplot(m_cl,round(ds,-2),'colors','r')
-ylabel('d(f) [%]')
+boxplot(m_q,round(ds,-2),'colors','r')
+ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
 xlabel('Frequency [Hz]')
 ylim(y_lim);
 %text(4.6, y_lim(2)-13, 'A', 'EdgeColor','k')
 text(1.04, 0.9, 'A', 'EdgeColor','k','Units','normalized')
 subplot(2,2,2)
-boxplot(frf_sfl,dc,'colors','g')
-ylabel('q(f) [%]')
+boxplot(m_cl,dc,'colors','g')
+ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
 xlabel('Frequency [Hz]')
 ylim(y_lim);
 %text(5.65, y_lim(2)-13, 'B', 'EdgeColor','k')
 text(1.04, 0.9, 'B', 'EdgeColor','k','Units','normalized')
 subplot(2,2,3)
-boxplot(frf_dp,round(f2s(end:-1:1),-2),'colors','b','notch','on')
-ylabel('q(f) [%]')
+boxplot(m_dp,round(f2s(end:-1:1),-2),'colors','b')
+ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
 xlabel('Frequency [Hz]')
 ylim(y_lim);
 %text(6.68, y_lim(2)-13, 'C', 'EdgeColor','k')
 text(1.04, 0.9, 'C', 'EdgeColor','k','Units','normalized')
 subplot(2,2,4)
 position_3 = 1.4:1:3.4;  
-box_1 = boxplot(frf_dp(:,[1,2,4]),'colors','b','positions',position_3,'width',0.18); 
+box_1 = boxplot(m_dp(:,[1,2,4]),'colors','b','positions',position_3,'width',0.18); 
 set(gca,'XTickLabel',{' '})  % Erase xlabels  
 hold on     
 
 position_1 = 1:1:3;  
-box_S = boxplot(frf_sfs(:,[1,2,4]),'colors','r','positions',position_1,'width',0.18);
+box_S = boxplot(m_q(:,[1,2,4]),'colors','r','positions',position_1,'width',0.18);
 set(gca,'XTickLabel',{' '})  % Erase xlabels  
 
 position_3 = 1.2:1:3.2;  
-box_3 = boxplot(frf_sfl(:,[1,3,5]),'colors','g','positions',position_3,'width',0.18);   
+box_3 = boxplot(m_cl(:,[1,3,5]),'colors','g','positions',position_3,'width',0.18);   
 set(gca,'XTickLabel',{'1000','2000','4000'})  % Label the last plot, in the middle
-ylabel('q(f) [%]')
+ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
 xlabel('Frequency [Hz]')
 ylim(y_lim);
 text(1.04, 0.9, 'D', 'EdgeColor','k','Units','normalized')
+
+figure()
+m_cl2 = reshape(m_cl, [],1);
+m_dp2  = reshape(m_dp, [],1);
+m_q2 = reshape(m_q, [],1);
+boxplot([m_q2(1:660), m_cl2(1:660), m_dp2(1:660)], 'notch', 'on', 'Labels',...
+    {'SFOAE Quick','SFOAE Cluster', 'DPOAE'})
+grid on 
+ylim([-18 18]);
+ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
+
+figure()
+s_cl2 = reshape(s_cl, [],1);
+s_dp2  = reshape(s_dp, [],1);
+s_q2 = reshape(s_q, [],1);
+boxplot([s_q2(1:460), s_cl2(1:460), s_dp2(1:460)], 'notch', 'on', 'Labels',...
+    {'SFOAE Quick','SFOAE Cluster', 'DPOAE'})
+grid on 
+ylim([-18 18]);
+ylabel('d_{sf}(f) [dB SPL]', 'Interpreter', 'tex')
+

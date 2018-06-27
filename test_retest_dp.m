@@ -71,8 +71,8 @@ load('OAE_dp2.mat'); %OAE_dp2
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
 % OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs x trials
 ears = ['L','R'];
-multifit_diff = NaN(length(names),32,6); %names x ears x entries x freqs
-singlefit_diff = NaN(length(names),30,6);
+multifit_diff = NaN(132,6); %entries x freqs
+singlefit_diff = NaN(130,6);
 
 control = 0; di2 = ''; ea2 = 0; 
 ml=0; %id of multiplefit entries
@@ -90,7 +90,7 @@ for i=1:length(names)
         if R_ear_id(j)==R_ear_id(j+1)
             trc = trc+1;
             sl = sl+1;
-            singlefit_diff(i,sl,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j,:);
+            singlefit_diff(sl,:) = OAE_dp2(i,j+1,:) - OAE_dp2(i,j,:);
                 disp([num2str(ea), name, num2str(letemp)])
 
         else
@@ -111,7 +111,7 @@ for i=1:length(names)
             for bum=bel
 %                     ['id1 ' num2str(al) ' id2 ' num2str(bum)];
                 ml=ml+1;
-               multifit_diff(i,ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+               multifit_diff(ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
             end
         end
     end
@@ -121,7 +121,7 @@ for i=1:length(names)
             for bum=bel
 %                     ['id1 ' num2str(al) ' id2 ' num2str(bum)]
                 ml=ml+1;
-               multifit_diff(i,ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+               multifit_diff(ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
             end
         end                       
     end   
