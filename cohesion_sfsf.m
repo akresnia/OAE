@@ -21,12 +21,17 @@ load('freq short.mat'); %ds
 load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
-Adqc = NaN(30, 3); %entries, freqs
+Adqc_big = NaN(30, 3); %entries, freqs
 Adqc2 = NaN(34, 3); %entries, freqs
+Adqc_big_su = NaN(17,50, 3); %subjects x entries, freqs
+
 
 al = 0; %counter
 bal = 0;
+max_sal = 0;
+
 for i = 1:length(names)
+    sal = 0;
     name = char(names(i));
     for ea = 1:2
         values_q = squeeze(OAE_quick(i,ea,[1,2,4],:));
@@ -41,21 +46,24 @@ for i = 1:length(names)
             for k = 1:lenc
                 diff = values_q(:,j)-values_c(:,k);
                 al = al + 1;
-                Adqc(al,:) = diff;
+                sal = sal + 1;
+                Adqc_big(al,:) = diff;
+                Adqc_big_su(i,sal,:) = diff;
             end
         end
     end
+    max_sal = max([max_sal,sal]);
 end
-medqc = median(Adqc, 'omitnan')
+medqc = median(Adqc_big, 'omitnan')
 medqc2 = median(Adqc2, 'omitnan')
-meanqc = mean(Adqc, 'omitnan')
+meanqc = mean(Adqc_big, 'omitnan')
 meanqc2 = mean(Adqc2, 'omitnan')
-stdqc = std(reshape(Adqc,1,[]), 'omitnan')
+stdqc = std(reshape(Adqc_big,1,[]), 'omitnan')
 stdqc2 = std(reshape(Adqc2,1,[]), 'omitnan')
 
 y_lim = [-15 15];
-figure()
-boxplot(Adqc,round(ds([1,2,4]),-2),'notch','on')
+figure('Name', 'BigN')
+boxplot(Adqc_big,round(ds([1,2,4]),-2),'notch','on')
 ylabel('Ad_{qc}(f) [dB SPL]', 'Interpreter', 'tex')
 set(gca,'XTickLabel',{'1000','2000','4000'})
 xlabel('Frequency [Hz]')
@@ -65,7 +73,7 @@ ylim(y_lim);
 % plot(cl(3,[1,3,5]),'g--','DisplayName','Cluster')
 % legend()
 
-y_lim = [-10, 10];
+
 figure()
 boxplot(Adqc2,round(ds([1,2,4]),-2),'notch','on')
 ylabel('Ad_{qc}(f) [dB SPL]', 'Interpreter', 'tex')
@@ -79,10 +87,12 @@ ylim(y_lim);
 
 figure()
 ala = NaN(6,17);
+sala = NaN(150,17);
 for i = 1:17
+    sala(:,i) = reshape(Adqc_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adqc2(2*i-1:2*i,:),[],1);
 end
-boxplot(ala)
+boxplot(sala, 'notch', 'on')
 grid on
 ylabel('Ad_{qc} [dB SPL]', 'Interpreter', 'tex')
 xlabel('Subject ID');

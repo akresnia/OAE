@@ -21,12 +21,15 @@ load('2OAE17osobclean.mat')
 load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
-Adcd = NaN(30, 3); %entries, freqs
+Adcd_big = NaN(30, 3); %entries, freqs
+Adcd_big_su = NaN(17,50, 3); %subjects x entries, freqs
 Adcd2 = NaN(34, 3); %entries, freqs
 
 al = 0; %counter
 bal = 0;
+max_sal = 0;
 for i = 1:length(names)
+    sal = 0;
     name = char(names(i));
     for ea = 1:2
         values_dp = squeeze(OAE_dp(i,ea,[3,5,6],:));
@@ -42,21 +45,24 @@ for i = 1:length(names)
             for k = 1:lenc
                 diff = values_c(:,k)-values_dp(:,j);
                 al = al + 1;
-                Adcd(al,:) = diff;
+                sal = sal + 1;
+                Adcd_big(al,:) = diff;
+                Adcd_big_su(i,sal,:) = diff;
             end
         end
     end
+    max_sal = max([max_sal,sal]);
 end
-medcd = median(Adcd, 'omitnan')
+medcd_big = median(Adcd_big, 'omitnan')
 medcd2 = median(Adcd2, 'omitnan')
-meancd = mean(Adcd, 'omitnan')
+meancd_big = mean(Adcd_big, 'omitnan')
 meancd2 = mean(Adcd2, 'omitnan')
-stdcd = std(reshape(Adcd,1,[]), 'omitnan')
+stdcd_big = std(reshape(Adcd_big,1,[]), 'omitnan')
 stdcd2 = std(reshape(Adcd2,1,[]), 'omitnan')
 
 y_lim = [-25 25];
-figure()
-boxplot(Adcd,dc([1,3,5]),'notch','on')
+figure('Name', 'BigN')
+boxplot(Adcd_big,dc([1,3,5]),'notch','on')
 ylabel('Ad_{cd}(f) [dB SPL]', 'Interpreter', 'tex')
 set(gca,'XTickLabel',{'1000','2000','4000'})
 xlabel('Frequency [Hz]')
@@ -82,10 +88,12 @@ grid on
 
 figure()
 ala = NaN(6,17);
+sala = NaN(150,17);
 for i = 1:17
+    sala(:,i) = reshape(Adcd_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adcd2(2*i-1:2*i,:),[],1);
 end
-boxplot(ala)
+boxplot(sala, 'notch', 'on')
 grid on
 ylabel('Ad_{cd} [dB SPL]', 'Interpreter', 'tex')
 xlabel('Subject ID');
