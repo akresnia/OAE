@@ -1,10 +1,5 @@
-function [fr,R2, R2_ear, mean_DP_clean] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag, PrctileFilename)
-% names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
-%     'Surala','Klaudia_W', 'Mikolaj_M','Michal_P','Krzysztof_B',...
-%     'Justyna_G','Alicja_B', 'Jan_B', 'Joanna_K','Joanna_R', ...
-%     'Kasia_P','Monika_W','Teresa_B','Ula_M','Urszula_O', ...
-%     };
-% name_idx = 19; 
+function [fr,frf,R2, R2_ear, mean_DP_clean, DP1_clean, times] = analysis_dpoae(name,name_idx, sndiff, SaveFlag, StdInterTrialPlotFlag, PrctileFilename)
+
 % name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 filename = ['dpoae_data_' name '.txt'];
@@ -12,6 +7,8 @@ f2_on_xaxis = 1; %if 0: on 2*f2 - f1 on xaxis
 fileID = fopen([directory_name filename]);
 head_lines = 5;% 4125; %9276;
 m = 6; %number of tested frequencies
+frf.L = NaN(1,m);
+frf.R = NaN(1,m);
 prc = 0.25:0.25:0.75; % population percentiles values
 
 % C_data1 = textscan(fileID,['%q', '%*q', '%*q', ...
@@ -20,7 +17,10 @@ prc = 0.25:0.25:0.75; % population percentiles values
 %d8 - int8, %*[^\n] skips the remainder of a line %q - quoted data
 
 C_data1 = textscan(fileID, repmat('%q',[1,52]),'HeaderLines',head_lines, 'CollectOutput',1,'Delimiter',',');
-
+idt1 = 1;
+idt2 = find(strcmp(C_data1{1}, 'CalibrationData'), 1, 'first');
+times.values = C_data1{1}(idt1:2:idt2, 3);
+times.ears = C_data1{1}(idt1:2:idt2, 5);
 idx1 = find(strcmp(C_data1{1}, 'TestData'), 1, 'first');
 idx2 = find(strcmp(C_data1{1}, 'TestSession'), 1, 'first');
 data = C_data1{1}(idx1+1:idx2-1,:);
@@ -65,13 +65,17 @@ for d=['L','R']
     DP1.(d) = DP1Col(ear_id);
     DP1.(d) = reshape(DP1.(d), [m,l.(d)])';%transposed, so data in rows, starting from f2=6000
     pass_id.(d) = reshape(pass_id.(d), [m,l.(d)])';
-    DP1_clean.(d) = DP1.(d);
+    DP1_clean.(d) = DP1.(d); 
     DP1_clean.(d)(~pass_id.(d)) = NaN; 
     mean_DP.(d) = mean(DP1.(d));
     mean_DP_clean.(d) = mean(DP1_clean.(d), 'omitnan');
 
 end
-
+try
+assert(l.L+l.R == length(times.values));
+catch
+warning(['time stamps do not correspond with data' name])
+end
 %% plotting
 figure('Name', ['DP ' name])
 pos = 1; 
@@ -101,6 +105,13 @@ for d=['L','R']
     s = sum(pass_id.(d)(:));
     den = length(pass_id.(d)(:));
     fr.(d) = 100* s/den; % in percents
+    
+    for fi = 1:length(DPfreqs) %frequency analysis
+        denf = l.(d);
+        pf = sum(pass_id.(d)(:,fi)); %number of passes
+       frf.(d)(fi) = 100*pf/denf; 
+    end
+    frf.(d) = frf.(d)(end:-1:1); %so frf goes from lowest to highest freq
     text(950, -19, ['passed: ' num2str(s) '/' num2str(den) ' = '...
         num2str(round(fr.(d),1)) ' %'])
     hold off

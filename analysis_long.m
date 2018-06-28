@@ -1,4 +1,4 @@
-function [fr,frf, R2, R2_ear, mean_SFL, gen_mean_clean] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
+function [fr,frf, R2, R2_ear, mean_SFL, gen_mean_clean, times] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 % options: 'clean', 'max_snr', 'all'
 
@@ -65,6 +65,9 @@ else
     mean_SFL.L = mean(gen_mean.L);
     mean_SFL.R = mean(gen_mean.R);
 end
+
+times.L = long(1:el.L,4);
+times.R = long(el.L+1:el.L+el.R, 4);
 
 %% plotting
 % grean dots are mean values in clusters calculated from measurements with

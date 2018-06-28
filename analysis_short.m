@@ -1,4 +1,4 @@
-function [fr,frf, R2,R2_ear, mean_SFs_clean, general_clean] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
+function [fr,frf, R2,R2_ear, mean_SFs_clean, general_clean, times] = analysis_short(name,name_idx, snr_value, SaveFlag, LegFlag, StdInterTrialPlotFlag, PrctileFilename)
 %directory_name = 'C:\Users\Alicja\Desktop\praca mgr\moje OAE\20_03\';
 %in the previous version when you run analiza_krotkie -> analiza_dlugie first plots overlap and can
 %be compared
@@ -26,6 +26,9 @@ else
 end    
 
 [a, b, c, short, long, longest] = wczytanie(directory_name);
+if a~=9 || b~= 9
+    disp([name ', a:' num2str(a) ', b:' num2str(b)])
+end
 %a - 1 = # of short trials
 n = 4; %length(data.sfe.fp)
 general.L = zeros(1,n); %zmieniæ na dane w wierszach? naprawiæ freqs
@@ -48,6 +51,9 @@ for i=1:a-1 %for each trial in dataset
     end
 end
 clear i j d
+times.L = short(1:el.L,4);
+times.R = short(el.L+1:el.L+el.R, 4);
+
 
 f = data.sfe.fp;
 pos = 1;
@@ -57,7 +63,6 @@ figure('Name', name)
 for d=['L','R'] 
     subplot(2,col,pos);
     if nargin == 7
-        disp('a')
         load(PrctileFilename) %here the interesting variable is mean_sfs
         hold on
         quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
