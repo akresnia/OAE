@@ -16,58 +16,60 @@ load('2OAE17osobclean.mat')
 % OAE vectors (clean):
 % OAE_quick = NaN(length(names),2, 4, 6); %subjects x ears x freqs x trials
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
-% OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs x trials
-load('freq short.mat'); %ds 
+% OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs (6kHz,5kHz...) x trials
+ 
 load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
-Adqc = NaN(30, 3); %entries, freqs
-Adqc2 = NaN(34, 3); %entries, freqs
+Adcd = NaN(30, 3); %entries, freqs
+Adcd2 = NaN(34, 3); %entries, freqs
 
 al = 0; %counter
 bal = 0;
 for i = 1:length(names)
     name = char(names(i));
     for ea = 1:2
-        values_q = squeeze(OAE_quick(i,ea,[1,2,4],:));
+        values_dp = squeeze(OAE_dp(i,ea,[3,5,6],:));
+        values_dp = values_dp(end:-1:1,:); %to have the same as in cluster order 1,2,4 kHz
         values_c = squeeze(OAE_cluster(i,ea,[1,3,5],:));
         bal = bal + 1;
-        Adqc2(bal,:) = mean(values_q,2,'omitnan') - mean(values_c,2,'omitnan');
+        Adcd2(bal,:) = mean(values_c,2,'omitnan') - mean(values_dp,2,'omitnan');
         lenc = length(values_c(~(sum(isnan(values_c))==3)));%cut off columns with only NaNs
-        lenq = length(values_q(~(sum(isnan(values_q))==3))); 
+        lendp = length(values_dp(~(sum(isnan(values_dp))==3))); 
         %lenq = size(values_q,2); %calculate number of trials
         %lenc = size(values_c,2);
-        for j = 1:lenq
+        for j = 1:lendp
             for k = 1:lenc
-                diff = values_q(:,j)-values_c(:,k);
+                diff = values_c(:,k)-values_dp(:,j);
                 al = al + 1;
-                Adqc(al,:) = diff;
+                Adcd(al,:) = diff;
             end
         end
     end
 end
-medqc = median(Adqc, 'omitnan')
-medqc2 = median(Adqc2, 'omitnan')
-meanqc = mean(Adqc, 'omitnan')
-meanqc2 = mean(Adqc2, 'omitnan')
-stdqc = std(reshape(Adqc,1,[]), 'omitnan')
-stdqc2 = std(reshape(Adqc2,1,[]), 'omitnan')
+medcd = median(Adcd, 'omitnan')
+medcd2 = median(Adcd2, 'omitnan')
+meancd = mean(Adcd, 'omitnan')
+meancd2 = mean(Adcd2, 'omitnan')
+stdcd = std(reshape(Adcd,1,[]), 'omitnan')
+stdcd2 = std(reshape(Adcd2,1,[]), 'omitnan')
 
-y_lim = [-15 15];
+y_lim = [-25 25];
 figure()
-boxplot(Adqc,round(ds([1,2,4]),-2),'notch','on')
-ylabel('Ad_{qc}(f) [dB SPL]', 'Interpreter', 'tex')
+boxplot(Adcd,dc([1,3,5]),'notch','on')
+ylabel('Ad_{cd}(f) [dB SPL]', 'Interpreter', 'tex')
 set(gca,'XTickLabel',{'1000','2000','4000'})
 xlabel('Frequency [Hz]')
 ylim(y_lim);
+grid on
 % hold on
 % plot(qu(3,[1,2,4]),'g:','DisplayName','Quick')
 % plot(cl(3,[1,3,5]),'g--','DisplayName','Cluster')
 % legend()
 
-y_lim = [-10, 10];
+
 figure()
-boxplot(Adqc2,round(ds([1,2,4]),-2),'notch','on')
+boxplot(Adcd2,dc([1,3,5]),'notch','on')
 ylabel('Ad_{qc}(f) [dB SPL]', 'Interpreter', 'tex')
 set(gca,'XTickLabel',{'1000','2000','4000'})
 xlabel('Frequency [Hz]')
@@ -76,14 +78,15 @@ xlabel('Frequency [Hz]')
 % plot(cl(3,[1,3,5]),'g--','DisplayName','Cluster')
 % legend()
 ylim(y_lim);
+grid on
 
 figure()
 ala = NaN(6,17);
 for i = 1:17
-    ala(:,i) = reshape(Adqc2(2*i-1:2*i,:),[],1);
+    ala(:,i) = reshape(Adcd2(2*i-1:2*i,:),[],1);
 end
 boxplot(ala)
 grid on
-ylabel('Ad_{qc} [dB SPL]', 'Interpreter', 'tex')
+ylabel('Ad_{cd} [dB SPL]', 'Interpreter', 'tex')
 xlabel('Subject ID');
 ylim(y_lim);
