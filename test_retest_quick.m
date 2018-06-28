@@ -19,7 +19,7 @@ ear_sex = [1,1,1,1,1,1,1,1,1,1,...
 SaveFlag = 0; LegFlag = 0; StdInterTrialPlotFlag=0;
 snr_value = 9; sndiff = 6;
 load('times_q_l.mat') %times sfl (long), times sfs (short)
-load('OAE17osobclean.mat')
+load('2OAE17osobclean.mat')
 % OAE vectors (clean):
 % OAE_quick = NaN(length(names),2, 4, 6); %subjects x ears x freqs x trials
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
