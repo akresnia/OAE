@@ -87,14 +87,14 @@ for d=['L','R']
         load(PrctileFilename)
         hold on
         quant = quantile(squeeze(mean_dp(ear_idx,:,:))',prc); %1st column is left ear
-        fill([DPfreqs' DPfreqs(end:-1:1)'],[quant(1,:) quant(3,end:-1:1)],[.92 .92 .92],'EdgeColor', 'none') %// light grey
+        fill([DPfreqs' DPfreqs(end:-1:1)'],[quant(1,:) quant(3,end:-1:1)],[.87 .87 .87],'EdgeColor', 'none') %// light grey
         %q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
         %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
         %q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
         ear_idx = ear_idx + 1;
     end
     plot(DPfreqs, DP1.(d)','-.'); 
-    title(['DPOAE "' d '" ear, ID: ' num2str(name_idx)]); 
+    %title(['DPOAE "' d '" ear, ID: ' num2str(name_idx)]); 
     ylabel('DP1 [dB SPL]'); xlabel(xlab);
     xlim([900 6100]); ylim(y_lim);
     

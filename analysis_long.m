@@ -6,7 +6,7 @@ function [fr,frf, R2, R2_ear, mean_SFL, gen_mean_clean, times] = analysis_long(n
 % SaveFlag = 0;
 prc = 0.25:0.25:0.75; % population percentiles values
 
-y_lim = [-23 23];
+y_lim = [-30 30];
 
 %% loading data
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
@@ -99,18 +99,19 @@ for d=['L','R']
         load(PrctileFilename)
         hold on
         quant = quantile(squeeze(mean_sfl(ear_id,:,:))',prc); %1st column is left ear
-        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.87 .87 .87],'EdgeColor', 'none') %// light grey
         hold on
-        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+        %q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
         %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
-        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+        %q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
         ear_id = ear_id + 1;
     end
 
     plot(f,dataopt.(d)','-.')
-    title([titopt ' "' d '" ear'])
+%     title([titopt ' "' d '" ear'])
+    title(['"' d '" ear'])
     hold on
-    scatter(freqs(noise_clu.(d)), dataopt.(d)(noise_clu.(d)), 30, 'r')
+    scatter(freqs(noise_clu.(d)), gen_mean.(d)(noise_clu.(d))', 30, 'r')
     scatter(freqs(~noise_clu.(d)), dataopt.(d)(~noise_clu.(d))', 30, 'g', 'filled')
     
     pl = plot(f, mean(gen_mean.(d), 'omitnan'),'r', 'LineWidth', 1.5, ...
@@ -132,14 +133,14 @@ for d=['L','R']
     end
     
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(fr.(d)) ' %'])
+        num2str(round(fr.(d),1)) ' %'])
     hold off
 end
 
 %% boxplots
 subplot(2,2,2); boxplot(gen_mean.L,round(data.sfe.fclist,-1)); ylim(y_lim)
-suptitle(['Cluster SFOAE, ID: ' num2str(name_idx)])
-title('Means of all pts in clusters')
+%suptitle(['Cluster SFOAE, ID: ' num2str(name_idx)])
+%title('Means of all pts in clusters')
 %xlabel('Frequency [Hz]')
 subplot(2,2,4); boxplot(gen_mean.R,round(data.sfe.fclist,-1)); ylim(y_lim)
 %xlabel('Frequency [Hz]')

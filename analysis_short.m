@@ -14,7 +14,7 @@ function [fr,frf, R2,R2_ear, mean_SFs_clean, general_clean, times] = analysis_sh
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
 %SaveFlag = 0;
 prc = 0.25:0.25:0.75; % population percentiles values
-y_lim = [-23 23]; %make dynamical?
+y_lim = [-40 30]; %make dynamical?
 
 leg = LegFlag; %legend flag
 
@@ -66,11 +66,11 @@ for d=['L','R']
         load(PrctileFilename) %here the interesting variable is mean_sfs
         hold on
         quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
-        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.87 .87 .87],'EdgeColor', 'none') %// light grey
         hold on
-        q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
+%         q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
         %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
-        q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
+%         q3 = plot(quant(3,:), 'DisplayName', ['Pop.' num2str(prc(3)*100) 'percentile']);
         ear_id = ear_id + 1;
     end
     plot(f,general.(d)','-.') 
@@ -98,7 +98,7 @@ for d=['L','R']
     end
     
     text(900, y_lim(1)+3, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(fr.(d)) ' %'])
+        num2str(round(fr.(d),1)) ' %'])
     mean_SFs.(d) = mean(general.(d));
     mean_SFs_clean.(d) = mean(general_clean.(d),'omitnan');
     pl = plot(f,mean_SFs.(d),'r', 'LineWidth', 1.5, 'DisplayName', 'Mean ("all")');
@@ -116,10 +116,10 @@ for d=['L','R']
         subplot(2,2,pos) 
         boxplot(general.(d),round(f,-1)) 
         ylim(y_lim)
-        title(['All Quick SFOAE, "' d '" ear'])
+%         title(['All Quick SFOAE, "' d '" ear'])
 %         xlabel('Frequency [Hz]')
     end
-    suptitle(['Subject ID: ' num2str(name_idx)])
+    %suptitle(['Subject ID: ' num2str(name_idx)])
     pos = pos+1;
 end
 hold off
