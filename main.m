@@ -6,6 +6,7 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Teresa_B', 'Jedrzej_R'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
+
 sex = [1,1,1,1,1,...
     0,0,0,0,1,...
     1,1,1,1,1,...
@@ -14,9 +15,14 @@ ear_sex = [1,1,1,1,1,1,1,1,1,1,...
     0,0,0,0,0,0,0,0,1,1,...
     1,1,1,1,1,1,1,1,1,1,...
     1,1,0,0]; %1 - female
+Bflag=1;
+if Bflag
+names = names2;
+disp('Group B')
+end
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
-SaveFlag = 0; LegFlag = 0; StdInterTrialPlotFlag=0;
+SaveFlag = 1; LegFlag = 0; StdInterTrialPlotFlag=0;
 snr_value = 9; sndiff = 6;
 name_idx = 1; 
 
@@ -45,11 +51,13 @@ mean_dp=NaN(2,6,length(names)); % in DPOAE
 times_sfs=struct(); %timestamps in SFOAE short
 times_sfl=struct(); %time stamps in SFOAE long
 % times_dp=struct(); %timestamps in DPOAE
+prctile_filename = 'srednie17osobclean.mat';
 %% OAE analysis
 for name_idx = 1:length(names)
     name = char(names(name_idx));
-%     %% short SFOAE 
-%     [fr,frf,R2, R2_ear,  m_SFs, dat, ts] = analysis_short(name, name_idx,snr_value,SaveFlag, LegFlag,StdInterTrialPlotFlag); %fraction of passes in %
+    %% short SFOAE 
+%     [fr,frf,R2, R2_ear,  m_SFs, dat, ts] = analysis_short(name, name_idx,snr_value,...
+%         SaveFlag, LegFlag,StdInterTrialPlotFlag,prctile_filename); %fraction of passes in %
 %     fr_sfs(2*name_idx-1) = fr.L; 
 %     fr_sfs(2*name_idx) = fr.R; 
 %     frf_sfs(2*name_idx-1,:) = frf.L; 
@@ -61,10 +69,11 @@ for name_idx = 1:length(names)
 %     times_sfs.(name) = ts;
 %     clear fr R2
 %     
-%     
-%     %% long SFOAE
+    
+    %% long SFOAE
 %     option = 'clean'; % options: 'clean', 'max_snr', 'all'
-%     [fr,frf,R2,R2_ear, m_SFL, dat,ts] = analysis_long(name, name_idx,snr_value,SaveFlag, option, StdInterTrialPlotFlag); %fraction of passes in 
+%     [fr,frf,R2,R2_ear, m_SFL, dat,ts] = analysis_long(name, name_idx,...
+%         snr_value,SaveFlag, option, StdInterTrialPlotFlag,prctile_filename); %fraction of passes in 
 %     fr_sfl(2*name_idx-1) = fr.L; 
 %     fr_sfl(2*name_idx) = fr.R; 
 %     frf_sfl(2*name_idx-1,:) = frf.L; 
@@ -78,7 +87,8 @@ for name_idx = 1:length(names)
 %     clear fr R2
 
     %% DPOAE
-    [fr,frf,R2,R2_ear, m_DP, dat, tm] = analysis_dpoae(name, name_idx,sndiff,SaveFlag, StdInterTrialPlotFlag,'srednie18osobclean.mat'); %fraction of passes in 
+    [fr,frf,R2,R2_ear, m_DP, dat, tm] = analysis_dpoae(name, name_idx,...
+        sndiff,SaveFlag, StdInterTrialPlotFlag,'srednie17osobclean.mat'); %fraction of passes in 
     times_dp.(name) =tm; 
     fr_dp(2*name_idx-1) = fr.L; 
     fr_dp(2*name_idx) = fr.R;
@@ -96,12 +106,12 @@ end
 
 % save(['srednie' num2str(name_idx) 'osob' option '.mat'],...
 %     'mean_dp','mean_sfl','mean_sfs');
-% save(['R2' num2str(name_idx) 'osob' option '.mat'],...
-%     'R2_dp','R2_sfl', 'R2_sfs', 'names');
-%save(['frf' num2str(name_idx) 'osob' option '.mat'],...
-%    'frf_dp','frf_sfl', 'frf_sfs','names'); 
-% save(['R2_ear' num2str(name_idx) 'osob' option '.mat'],...
-%     'R2_ear_dp','R2_ear_sfl', 'R2_ear_sfs', 'names');
+ save(['R2' num2str(name_idx) 'osob' option '.mat'],...
+     'R2_dp','R2_sfl', 'R2_sfs', 'names');
+save(['fr' num2str(name_idx) 'osob' option '.mat'],...
+    'fr_dp','fr_sfl', 'fr_sfs','names'); 
+ save(['R2_ear' num2str(name_idx) 'osob' option '.mat'],...
+     'R2_ear_dp','R2_ear_sfl', 'R2_ear_sfs', 'names');
 
 %rozrzut bez sumy po fi, sprawdziæ long clean i all, porownac plec?,
 %narysowac tez srednie z 1 lub 2 sigma
@@ -129,7 +139,7 @@ grid('on')
 %[mu,muerr,N,stdv,min,max,meanci] =grpstats(R2_ear_dp.^0.5,[],...
  %   {'mean','sem','numel','std','min','max','meanci'});
 ala = R2_ear_sfl.^0.5;
-h = kstest((ala-mean(ala))/std(ala)); %return 0 for all R2_ sets
+h = kstest((ala-mean(ala,'omitnan'))/std(ala,'omitnan')); %return 0 for all R2_ sets
 
 
 %% plotting histogram of frac
@@ -137,9 +147,9 @@ nbins = 20;
 Title = '';%'Histogram of fraction of measurements with "pass"';
 XLabel = 'Q [%]';
 
-PlotHistogram(fr_sfs,fr_sfl,fr_dp,'SFOAE short','SFOAE long','DPOAE',...
+PlotHistogram(fr_sfs,fr_sfl,fr_dp,'SFOAE Quick','SFOAE Cluster','DPOAE',...
     0,100,nbins, Title,XLabel,'northwest')
-
+if ~Bflag
 fracM = [fr_sfs(ear_sex==0) fr_sfl(ear_sex==0) fr_dp(ear_sex==0)]; 
 fracsfsF = fr_sfs(sex==1);
 fracsflF = fr_sfl(sex==1);
@@ -148,3 +158,4 @@ N_M = length(sex)-sum(sex); %number of male participants
 fracF = [fracsfsF(1:2*N_M) fracsflF(1:2*N_M) fracdpF(1:2*N_M)];
 PlotHistogram2(fracM,fracF,'Male','Female',...
     0,100,nbins, Title,XLabel,'northwest')
+end
