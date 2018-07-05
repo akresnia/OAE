@@ -5,22 +5,22 @@ clear all
 
 group_A = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
-    'Alicja_K','Jan_B', 'Joanna_K','Joanna_R', 'Kasia_P',...
-    'Monika_W','Teresa_B','Jedrzej_R'...
+    'Alicja_K', 'Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
+    'Teresa_B','Jedrzej_R'...
     };
-group_B = {'Alicja_B','Ula_M','Urszula_O'};
-group = 'A';
+group_B = {'Alicja_B','Ula_M','Urszula_O','Jan_B'};
+group = 'B';
 names = eval(['group_' group]) ;
-name_idx = 12; 
+name_idx = 4; 
 snr_value = 9;
 name = char(names(name_idx));
 directory_name = ['C:\Users\Alicja\Desktop\praca mgr\OAE ' name '\'];
-PrctileFilename = 'srednie18osoball.mat';
+PrctileFilename = 'srednie17osobclean.mat';
 SaveFlag = 1;
 PlotPercentile = 1; prc = 0.25:0.25:0.75; % population percentiles values
 
 y_lim = [-40 25]; %make dynamical?
-leg = 1; %legend flag
+leg = 0; %legend flag
 
 col = 2;
 if leg
@@ -66,7 +66,7 @@ for d=['L','R']
         load(PrctileFilename)
         hold on
         quant = quantile(squeeze(mean_sfs(ear_id,:,:))',prc); %1st column is left ear
-        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.95 .95 .95]) %// light grey
+        fill([f f(end:-1:1)],[quant(1,:) quant(3,end:-1:1)],[.93 .93 .93],'EdgeColor', 'none') %// light grey
         hold on
 %         q1 = plot(quant(1,:), 'DisplayName', ['Pop.' num2str(prc(1)*100) 'percentile']);
         %plot(quant(2,:),'r--', 'DisplayName', 'Population median')
@@ -97,7 +97,7 @@ for d=['L','R']
     p = den-s;
     fr.(d) = 100* p/den ;
     text(900, y_lim(1)+4, ['passed: ' num2str(p) '/' num2str(den) ' = '...
-        num2str(fr.(d)) ' %'])  
+        num2str(round(fr.(d),1)) ' %'])  
     
     
     if leg && strcmp(d,'L')
@@ -134,8 +134,8 @@ end
 if ~leg
     [ax,h1]=suplabel('Frequency [Hz]','x',[.075 .1 .85 .85]);
     [ax,h2]=suplabel('OAE level [dB SPL]','y');
-    [ax,h3]=suplabel(['Quick SFOAE, ' 'subject ID: ' num2str(name_idx) group] ,'t');
-    set(h3,'FontSize',12)
+    %[ax,h3]=suplabel(['Quick SFOAE, ' 'subject ID: ' num2str(name_idx) group] ,'t');
+    %set(h3,'FontSize',12)
 else
     subplot(1,2,1)
     xlabel('Frequency [Hz]')
@@ -157,6 +157,6 @@ elseif ~leg && SaveFlag
 end
 
 %% reproducibility analysis
-frac = (fr.L + fr.R)/2
+frac = (fr.L + fr.R)/2;
 %InterTrialPlot(n, general, data.sfe.fp, el, 'Short SFOAE', name,name_idx,SaveFlag)
 % StdPlot(data.sfe.fp, general, 'Short SFOAE',name,name_idx,SaveFlag)
