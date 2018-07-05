@@ -59,7 +59,7 @@ save(['2OAE' num2str(name_idx) 'osob' option '.mat'],...
 cl = NaN(4,5);
 qu = NaN(4,4);
 dp = NaN(4,6);
-for i=1:6
+for i=1:6 %careful! the frequencies are in descending order!
     dat = reshape(OAE_dp(:,:, i,:),1,[]);
     dp(1,i) = min(dat);
     dp(2,i) = max(dat);
