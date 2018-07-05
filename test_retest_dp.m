@@ -10,22 +10,18 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
 Bflag = 1;
 if Bflag
-names = names2;
-disp('group B')
+    names = names2;
+    disp('group B')
+    load('B_OAE_dp2.mat'); %OAE_dp2
+    load('times_d_4osobclean.mat') %times_dp
+else
+    load('times_d_17osobclean.mat') %times_dp
+    load('OAE_dp2.mat'); %OAE_dp2
 end
-sex = [1,1,1,1,1,...
-    0,0,0,0,1,...
-    1,1,1,1,1,...
-    1,0]; %1 - female
-ear_sex = [1,1,1,1,1,1,1,1,1,1,...
-    0,0,0,0,0,0,0,0,1,1,...
-    1,1,1,1,1,1,1,1,1,1,...
-    1,1,0,0]; %1 - female
+
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
 
-%load('times_d_17osobclean.mat') %times_dp
-%load('OAE_dp2.mat'); %OAE_dp2
 
 % OAE_dp2 = NaN(length(names), 16, 6); %names x trials x freqs
 % for nam=1:length(names)
@@ -79,8 +75,8 @@ ear_sex = [1,1,1,1,1,1,1,1,1,1,...
 % OAE_dp = NaN(length(names),2, 6, 6); %subjects x ears x freqs x trials
 
 ears = ['L','R'];
-multifit_diff = NaN(32,6); %entries x freqs
-singlefit_diff = NaN(30,6);
+multifit_diff = NaN(132,6); %entries x freqs
+singlefit_diff = NaN(130,6);
 
 control = 0; di2 = ''; ea2 = 0; 
 ml=0; %id of multiplefit entries
@@ -119,7 +115,7 @@ for i=1:length(names)
             for bum=bel
 %                     ['id1 ' num2str(al) ' id2 ' num2str(bum)];
                 ml=ml+1;
-               multifit_diff(ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+               multifit_diff(ml,:) = OAE_dp2(i,bum,:) - OAE_dp2(i,al,:);
             end
         end
     end
@@ -129,18 +125,18 @@ for i=1:length(names)
             for bum=bel
 %                     ['id1 ' num2str(al) ' id2 ' num2str(bum)]
                 ml=ml+1;
-               multifit_diff(ml,:) = OAE_dp2(i,al,:) - OAE_dp2(i,bum,:);
+               multifit_diff(ml,:) = OAE_dp2(i,bum,:) - OAE_dp2(i,al,:);
             end
         end                       
     end   
 end
 save(['testretest_dp_' num2str(length(names)) 'osobclean.mat'], 'multifit_diff', 'singlefit_diff')
-single_all = reshape(singlefit_diff,1,[]);
+single_all = abs(reshape(singlefit_diff,1,[]));
 N_sf = sum(~isnan(single_all))
 mean_sf = mean(single_all,'omitnan')
 std_sf = std(single_all,'omitnan')
 
-multiple_all = reshape(multifit_diff,1,[]);
+multiple_all = abs(reshape(multifit_diff,1,[]));
 N_mf = sum(~isnan(multiple_all))
 mean_mf = mean(multiple_all,'omitnan')
 std_mf = std(multiple_all,'omitnan')

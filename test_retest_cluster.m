@@ -6,7 +6,7 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Teresa_B', 'Jedrzej_R'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-flagB = 1;
+flagB = 0;
 if flagB
     names = names2;
     load('B_times_q_l.mat') %times sfl (long), times sfs (short)
@@ -73,8 +73,8 @@ for i=1:length(names)
                         id1 = pairs(pa,1);
                         id2 = pairs(pa,2);
                         ml=ml+1;
-                        multifit_diff(ml,:) = OAE_cluster(i,ea,:,id1)...
-                            - OAE_cluster(i,ea,:,id2);   
+                        multifit_diff(ml,:) = OAE_cluster(i,ea,:,id2)...
+                            - OAE_cluster(i,ea,:,id1);   
                     end
                 end
             else
@@ -96,10 +96,10 @@ end
 save(['testretest_cluster_' num2str(length(names)) 'osobclean.mat'], 'multifit_diff', 'singlefit_diff')
 single_all = reshape(singlefit_diff,1,[]);
 N_sf = sum(~isnan(single_all))
-mean_sf = mean(single_all,'omitnan')
-std_sf = std(single_all,'omitnan')
+mean_sf = mean(abs(single_all),'omitnan')
+std_sf = std(abs(single_all),'omitnan')
 
 multiple_all = reshape(multifit_diff,1,[]);
 N_mf = sum(~isnan(multiple_all))
-mean_mf = mean(multiple_all,'omitnan')
-std_mf = std(multiple_all,'omitnan')
+mean_mf = mean(abs(multiple_all),'omitnan')
+std_mf = std(abs(multiple_all),'omitnan')

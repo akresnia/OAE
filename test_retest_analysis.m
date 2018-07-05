@@ -20,18 +20,18 @@ load('freq short.mat'); %ds
 load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
-[m_cls_cl] = load('testretest_cluster_17osobclean.mat');
+[m_cls_cl] = load(['testretest_cluster_' num2str(length(names)) 'osobclean.mat']); %m=multi s=single-fit
 m_cl = m_cls_cl.multifit_diff;
 s_cl = m_cls_cl.singlefit_diff;
-[m_qs_q] = load('testretest_quick_17osobclean.mat');
+[m_qs_q] = load(['testretest_quick_' num2str(length(names)) 'osobclean.mat']);
 m_q = m_qs_q.multifit_diff;
 s_q = m_qs_q.singlefit_diff;
-[m_dps_dp] = load('testretest_dp_17osobclean.mat');
+[m_dps_dp] = load(['testretest_dp_' num2str(length(names)) 'osobclean.mat']);
 m_dp = m_dps_dp.multifit_diff;
 s_dp = m_dps_dp.singlefit_diff;
 
 %% plotting
-y_lim = [-20 20];
+y_lim = [-10 10];
 figure()
 subplot(2,2,1)
 boxplot(m_q,round(ds,-2),'colors','r', 'notch','on')
@@ -76,24 +76,30 @@ figure()
 m_cl2 = reshape(m_cl, [],1);
 m_dp2  = reshape(m_dp, [],1);
 m_q2 = reshape(m_q, [],1);
-if flagB
-    boxplot([m_q2(1:460), m_cl2(1:460), m_dp2(1:460)], 'notch', 'on', 'Labels',...
+
+m_3 = NaN(max([size(m_cl2,1), size(m_dp2,1), size(m_q2,1)]),3);
+m_3(1:length(m_q2),1) = m_q2;
+m_3(1:length(m_cl2),2) = m_cl2;
+m_3(1:length(m_dp2),3) = m_dp2;
+
+boxplot(m_3, 'notch', 'on', 'Labels',...
     {'SFOAE Quick','SFOAE Cluster', 'DPOAE'})
-else
-boxplot([m_q2(1:660), m_cl2(1:660), m_dp2(1:660)], 'notch', 'on', 'Labels',...
-    {'SFOAE Quick','SFOAE Cluster', 'DPOAE'})
-end
 grid on 
-ylim([-18 18]);
+% ylim([-18 18]);
 ylabel('d_{mf}(f) [dB SPL]', 'Interpreter', 'tex')
 
 figure()
 s_cl2 = reshape(s_cl, [],1);
 s_dp2  = reshape(s_dp, [],1);
 s_q2 = reshape(s_q, [],1);
-boxplot([s_q2(1:460), s_cl2(1:460), s_dp2(1:460)], 'notch', 'on', 'Labels',...
+
+s_3 = NaN(max([size(s_cl2,1), size(s_dp2,1), size(s_q2,1)]),3);
+s_3(1:length(s_q2),1) = s_q2;
+s_3(1:length(s_cl2),2) = s_cl2;
+s_3(1:length(s_dp2),3) = s_dp2;
+boxplot(s_3, 'notch', 'on', 'Labels',...
     {'SFOAE Quick','SFOAE Cluster', 'DPOAE'})
 grid on 
-ylim([-18 18]);
+% ylim([-18 18]);
 ylabel('d_{sf}(f) [dB SPL]', 'Interpreter', 'tex')
 

@@ -77,7 +77,7 @@ for i=1:length(names)
                         id1 = pairs(pa,1);
                         id2 = pairs(pa,2);
                         ml=ml+1;
-                        multifit_diff(ml,:) = OAE_quick(i,ea,:,id1) - OAE_quick(i,ea,:,id2);   
+                        multifit_diff(ml,:) = OAE_quick(i,ea,:,id2) - OAE_quick(i,ea,:,id1);   
                     end
                 end
             else
@@ -92,13 +92,13 @@ for i=1:length(names)
 %         end
     end
 end
-save(['testretest_quick_' num2str(length(names) 'osobclean.mat'], 'multifit_diff', 'singlefit_diff')
+save(['testretest_quick_' num2str(length(names)) 'osobclean.mat'], 'multifit_diff', 'singlefit_diff')
 single_all = reshape(singlefit_diff,1,[]);
 N_sf = sum(~isnan(single_all))
-mean_sf = mean(single_all,'omitnan')
-std_sf = std(single_all,'omitnan')
+mean_sf = mean(abs(single_all),'omitnan')
+std_sf = std(abs(single_all),'omitnan')
 
 multiple_all = reshape(multifit_diff,1,[]);
 N_mf = sum(~isnan(multiple_all))
-mean_mf = mean(multiple_all,'omitnan')
-std_mf = std(multiple_all,'omitnan')
+mean_mf = mean(abs(multiple_all),'omitnan')
+std_mf = std(abs(multiple_all),'omitnan')
