@@ -13,7 +13,7 @@ PopulationMeansFileName = 'srednie20osob_all.mat';
 if CreatePool
     audiograms = NaN(2,19,length(names));
 end 
-fname = 'audiograms20bezemnieiKlaudii.mat';
+fname = 'audiogram17zemnabezKlaudii.mat';
 for name_idx = 1:2
     name = char(names(name_idx));
     
