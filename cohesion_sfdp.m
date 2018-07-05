@@ -6,13 +6,21 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Teresa_B', 'Jedrzej_R'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-
+flagB = 1;
+if flagB
+names = names2;
+load('B_OAE4osobclean.mat');
+disp('Group B')
+else
+    load('2OAE17osobclean.mat')
+end
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
 SaveFlag = 0; LegFlag = 0; StdInterTrialPlotFlag=0;
 snr_value = 9; sndiff = 6;
 option = 'clean'; % options: 'clean', 'max_snr', 'all'
-load('2OAE17osobclean.mat')
+%
+
 % OAE vectors (clean):
 % OAE_quick = NaN(length(names),2, 4, 6); %subjects x ears x freqs x trials
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
@@ -22,8 +30,8 @@ load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
 Adcd_big = NaN(30, 3); %entries, freqs
-Adcd_big_su = NaN(17,50, 3); %subjects x entries, freqs
-Adcd2 = NaN(34, 3); %entries, freqs
+Adcd_big_su = NaN(length(names),50, 3); %subjects x entries, freqs
+Adcd2 = NaN(35, 3); %entries (this dim is expanding during the analysis), freqs
 
 al = 0; %counter
 bal = 0;
@@ -43,21 +51,24 @@ for i = 1:length(names)
         %lenc = size(values_c,2);
         for j = 1:lendp
             for k = 1:lenc
-                diff = values_c(:,k)-values_dp(:,j);
+                diff1 = values_c(:,k)-values_dp(:,j);
                 al = al + 1;
                 sal = sal + 1;
-                Adcd_big(al,:) = diff;
-                Adcd_big_su(i,sal,:) = diff;
+                Adcd_big(al,:) = diff1;
+                Adcd_big_su(i,sal,:) = diff1;
             end
         end
     end
     max_sal = max([max_sal,sal]);
 end
 medcd_big = median(Adcd_big, 'omitnan')
+medcd_big_abs = median(abs(Adcd_big), 'omitnan')
 medcd2 = median(Adcd2, 'omitnan')
 meancd_big = mean(Adcd_big, 'omitnan')
+meancd_big_abs = mean(abs(Adcd_big), 'omitnan')
 meancd2 = mean(Adcd2, 'omitnan')
 stdcd_big = std(reshape(Adcd_big,1,[]), 'omitnan')
+stdcd_big_abs = std(reshape(abs(Adcd_big),1,[]), 'omitnan')
 stdcd2 = std(reshape(Adcd2,1,[]), 'omitnan')
 
 y_lim = [-25 25];
@@ -76,7 +87,7 @@ grid on
 
 figure()
 boxplot(Adcd2,dc([1,3,5]),'notch','on')
-ylabel('Ad_{qc}(f) [dB SPL]', 'Interpreter', 'tex')
+ylabel('Ad_{cd}(f) [dB SPL]', 'Interpreter', 'tex')
 set(gca,'XTickLabel',{'1000','2000','4000'})
 xlabel('Frequency [Hz]')
 % hold on
@@ -87,9 +98,9 @@ ylim(y_lim);
 grid on
 
 figure()
-ala = NaN(6,17);
-sala = NaN(150,17);
-for i = 1:17
+ala = NaN(6,length(names));
+sala = NaN(150,length(names));
+for i = 1:length(names)
     sala(:,i) = reshape(Adcd_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adcd2(2*i-1:2*i,:),[],1);
 end
