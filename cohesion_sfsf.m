@@ -6,13 +6,21 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Teresa_B', 'Jedrzej_R'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-
+Bflag = 0;
+if Bflag == 1
+names = names2;
+disp('group B')
+load('B_OAE4osobclean.mat')
+else 
+    load('2OAE17osobclean.mat')
+end
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
 SaveFlag = 0; LegFlag = 0; StdInterTrialPlotFlag=0;
 snr_value = 9; sndiff = 6;
 option = 'clean'; % options: 'clean', 'max_snr', 'all'
-load('2OAE17osobclean.mat')
+
+
 % OAE vectors (clean):
 % OAE_quick = NaN(length(names),2, 4, 6); %subjects x ears x freqs x trials
 % OAE_cluster = NaN(length(names),2, 5, 6); %subjects x ears x freqs x trials
@@ -23,7 +31,7 @@ load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
 Adqc_big = NaN(30, 3); %entries, freqs
 Adqc2 = NaN(34, 3); %entries, freqs
-Adqc_big_su = NaN(17,50, 3); %subjects x entries, freqs
+Adqc_big_su = NaN(length(names),50, 3); %subjects x entries, freqs
 
 
 al = 0; %counter
@@ -42,13 +50,14 @@ for i = 1:length(names)
         lenq = length(values_q(~(sum(isnan(values_q))==3))); 
         %lenq = size(values_q,2); %calculate number of trials
         %lenc = size(values_c,2);
-        for j = 1:lenq
-            for k = 1:lenc
+        for j = 1:lenq %number of quick trials
+            for k = 1:lenc %number of cluster trials
                 diff = values_q(:,j)-values_c(:,k);
                 al = al + 1;
                 sal = sal + 1;
                 Adqc_big(al,:) = diff;
                 Adqc_big_su(i,sal,:) = diff;
+                clear diff
             end
         end
     end
@@ -86,9 +95,9 @@ xlabel('Frequency [Hz]')
 ylim(y_lim);
 
 figure()
-ala = NaN(6,17);
-sala = NaN(150,17);
-for i = 1:17
+ala = NaN(6,length(names));
+sala = NaN(150,length(names));
+for i = 1:length(names)
     sala(:,i) = reshape(Adqc_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adqc2(2*i-1:2*i,:),[],1);
 end
@@ -97,3 +106,10 @@ grid on
 ylabel('Ad_{qc} [dB SPL]', 'Interpreter', 'tex')
 xlabel('Subject ID');
 ylim(y_lim);
+
+% ala = reshape(Adqc_big_su(1,:,:),[],1)
+% for i=2:17
+% ala = cat(2,ala,reshape(Adqc_big_su(i,:,:),[],1));
+% end
+% [p1,tbl1,stats1] = kruskalwallis(ala);
+% c = multcompare(stats1,  'CType', 'bonferroni');
