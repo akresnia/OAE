@@ -32,6 +32,7 @@ if nargin == 3
     quant2 = quantile(squeeze(audiograms(2,:,:))',prc); %2nd column is right ear
     
     subplot(2,1,1)
+    
     %fill([freqs' freqs(end:-1:1)'],[quant1(1,:) quant1(3,end:-1:1)],[.95 .95 .95]) %// light grey
 %     hold on
     p3 = semilogx(freqs, quant1(1,:),'--', 'DisplayName', ['Pop. ' num2str(prc(1)*100) ' percentile']);
@@ -40,14 +41,15 @@ if nargin == 3
     hold on
     p4 = semilogx(freqs, quant1(3,:),'--', 'DisplayName', ['Pop. ' num2str(prc(3)*100) ' percentile']);
     p5 = semilogx(freqs,left,'ro-','DisplayName', 'Left ear');
-    legend([p3 p4 p5], 'Location', 'northwest');
-
+    p6 = plot([8000,8000],[-40,40],'r:', 'DisplayName', 'End of standard range');
+%     legend([p3 p4 p5], 'Location', 'northwest');
+    ylabel('Hearing threshold [dB HL]');
     xlim(XLim);
     ylim([-25 35]);
     set(gca,'Ydir','reverse')
     ax = gca;
     ax.XTick = [freqs(1:9); freqs(10:3:end)];%;freqs(12:3:end)];
-    title(['Audiogram, patient ID: ' num2str(id)]);
+%     title(['Audiogram, patient ID: ' num2str(id)]);
     
     subplot(2,1,2)
 %     fill([freqs' freqs(end:-1:1)'],[quant2(1,:) quant2(3,end:-1:1)],[.95 .95 .95]) %// light grey
@@ -57,12 +59,15 @@ if nargin == 3
     hold on
     p1 = semilogx(freqs, quant2(3,:),'--', 'DisplayName', ['Pop. ' num2str(prc(3)*100) ' percentile']);
     p2 = semilogx(freqs,right,'go-','MarkerFaceColor','g', 'DisplayName', 'Right ear');
-    legend([p0 p1 p2], 'Location', 'southwest');
+%     legend([p0 p1 p2], 'Location', 'southwest');
+    p6 = plot([8000,8000],[-40,40],'r:', 'DisplayName', 'End of standard range');
+
     xlim(XLim);
     ylim([-25 35]);
     set(gca,'Ydir','reverse')
     ax = gca;
     ax.XTick = [freqs(1:9); freqs(10:3:end)];%;freqs(12:3:end)];
+    ylabel('Hearing threshold [dB HL]');
 else
     
 p2 = semilogx(freqs,right,'go-','MarkerFaceColor','g', 'DisplayName', 'Right');
@@ -73,9 +78,30 @@ ylim([-25 35]);
 set(gca,'Ydir','reverse')
 ax = gca;
 ax.XTick = [freqs(1:9); freqs(10:3:end)];%;freqs(12:3:end)];
-title(['Audiogram, patient ID: ' num2str(id)]);
+% title(['Audiogram, patient ID: ' num2str(id)]);
 end
 hold off
 
-ylabel('dB HL');
+ylabel('Hearing threshold [dB HL]');
 xlabel('Frequency [Hz]');
+
+% % when breakpoint in line 34, to plot only percentiles with shaded area:
+% figure()
+% ala = cat(1,squeeze(audiograms(1,:,:))',squeeze(audiograms(2,:,:))');
+% prc2 = [0.1, 0.5, 0.9];
+% quantala2 = quantile(ala,prc2);
+% p1 = semilogx(freqs, quantala2(1,:),'--', 'DisplayName', [num2str(prc2(1)*100) ' percentile']);
+% hold on
+% p2 = semilogx(freqs, quantala2(3,:),'--', 'DisplayName', [num2str(prc2(3)*100) ' percentile']);
+% fill([freqs' freqs(end:-1:1)'],[quantala2(1,:) quantala2(3,end:-1:1)],[.90 .90 .90],'EdgeColor', 'none')
+% p3 = plot([8000, 8000], [-25,25],'r:', 'DisplayName', 'End of standard range');
+% xlim(XLim);
+% ylim([-25 35]);
+% set(gca,'Ydir','reverse');
+% ax = gca;
+% ax.XTick = [freqs(1:9); freqs(10:3:end)];
+% ylim([-25 20]);
+% xlabel('Frequency [Hz]');
+% ylabel('Hearing threshold [dB HL]');
+% ylim([-25 25]);
+% legend([p1,p2,p3],'Location','northwest')
