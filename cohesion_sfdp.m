@@ -3,16 +3,16 @@
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R','Michal_Cieslak','Ola_Lodyga'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-flagB = 1;
+flagB = 0;
 if flagB
 names = names2;
 load('B_OAE4osobclean.mat');
 disp('Group B')
 else
-    load('2OAE17osobclean.mat')
+    load('2OAE' num2str(length(names)) 'osobclean.mat')
 end
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
@@ -29,8 +29,8 @@ option = 'clean'; % options: 'clean', 'max_snr', 'all'
 load('freq dp.mat'); %f2s
 load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
-Adcd_big = NaN(30, 3); %entries, freqs
-Adcd_big_su = NaN(length(names),50, 3); %subjects x entries, freqs
+Adcd_big = NaN(3000, 3); %entries, freqs
+Adcd_big_su = NaN(length(names),10000, 3); %subjects x entries, freqs
 Adcd2 = NaN(35, 3); %entries (this dim is expanding during the analysis), freqs
 
 al = 0; %counter
@@ -54,8 +54,8 @@ for i = 1:length(names)
                 diff1 = values_c(:,k)-values_dp(:,j);
                 al = al + 1;
                 sal = sal + 1;
-                Adcd_big(al,:) = diff1;
-                Adcd_big_su(i,sal,:) = diff1;
+                Adcd_big(al,1:length(diff1)) = diff1;
+                Adcd_big_su(i,sal,1:length(diff1)) = diff1;
             end
         end
     end
@@ -99,7 +99,7 @@ grid on
 
 figure()
 ala = NaN(6,length(names));
-sala = NaN(150,length(names));
+sala = NaN(size(Adcd_big_su,2)*size(Adcd_big_su,3),length(names));
 for i = 1:length(names)
     sala(:,i) = reshape(Adcd_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adcd2(2*i-1:2*i,:),[],1);

@@ -37,8 +37,10 @@ images = {};
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R','Michal_Cieslak','Ola_Lodyga'
     };
+names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
+comments2 = {'group B', 'group B', 'group B', 'group B'};
 % comments = {'musical school (oboe)','-', '-','-','-',...
 %     'OAE measurements on evening', 'musical school - percussion','-', '-','-',...
 %     'no SFOAE', 'external noises during OAE measurements', '-','-','-',...
@@ -47,7 +49,11 @@ names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
 comments = {'musical school (oboe)','-', '-','-','-',...
     'OAE measurements on evening', 'musical school - percussion','-', '-','-',...
     '-', '-','-','-','-',...
-    '-','previous problems with ears'};
+    '-','previous problems with ears','new','new'};
+AudiogramFlag = 0;
+% names = names2;
+% comments = comments2;
+
 % Create a document.
 doc = Document(['Subject ' char(names(subject_ID)) ' summary'], doctype);
 open(doc);
@@ -98,6 +104,7 @@ addBodyPara(doc, 'Summary of short (quick) and long (cluster) SFOAE, DPOAE and a
 % Plot
 name_idx = subject_ID;
 name = char(names(name_idx));
+if AudiogramFlag
 fname = 'audiogram17zemnabezKlaudii.mat';
 
 analysis_audiogram(name, name_idx,fname);
@@ -129,21 +136,23 @@ img = addPlot(doc, ['plotSOAE_' char(ear)]);
 images = [images {img}]; 
 
 end
+end
 snr_value = 9; sndiff = 6; CreatePool = 0;
 PopulationMeansFileName = 'srednie20osob_all.mat';
-[fr,R2,  m_SFs] = analysis_short(name, name_idx,snr_value,0, 0,0,PopulationMeansFileName); %fraction of passes in %    
+[fr,frf, R2,R2_ear, mean_SFs_clean, general_clean, times] = analysis_short(name, name_idx,snr_value,0, 0,0,PopulationMeansFileName); %fraction of passes in %    
 img = addPlot(doc, 'plot2');
 images = [images {img}]; %#ok<*NASGU>
 
 % Add more boilerplate.
 addBodyPara(doc, 'SFOAE, grey area shows 1st and 3rd quantile of means from all subjects having DPOAE (with subject 11, without this having problems with impedance audiometry and without me');
     option = 'all'; % options: 'clean', 'max_snr', 'all'
-    [fr,R2, m_SFL] = analysis_long(name, name_idx,snr_value,0, option, 0, PopulationMeansFileName); %fraction of passes in 
+    tem = analysis_long(name, name_idx,snr_value,0, option, 0, PopulationMeansFileName); %fraction of passes in 
 img = addPlot(doc, 'plot3');
 images = [images {img}]; %#ok<*NASGU>
 addBodyPara(doc, '"all" means that all 5 points in a cluster were taken to calculations of average for this frequency (for single red or green circle)');
 % DPOAE
-    [fr,R2, m_DP] = analysis_dpoae(name, name_idx,sndiff,0, 0, PopulationMeansFileName); %fraction of passes in 
+    tem = analysis_dpoae(name, name_idx,sndiff,0, 0, PopulationMeansFileName); %fraction of passes in 
+
 img = addPlot(doc, 'plot4');
 images = [images {img}]; %#ok<*NASGU>
 % addBodyPara(doc, 'DPOAE');

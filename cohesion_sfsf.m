@@ -3,16 +3,16 @@
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R','Michal_Cieslak','Ola_Lodyga'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-Bflag = 0;
-if Bflag == 1
+Bflag = 1;
+if Bflag == 0
 names = names2;
 disp('group B')
 load('B_OAE4osobclean.mat')
 else 
-    load('2OAE17osobclean.mat')
+    load(['2OAE' num2str(length(names)) 'osobclean.mat'])
 end
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
 % Alicja_B, Ula_O i Ula_M maj¹ s³abe wyniki, Jan_B nienajlepiej
@@ -31,7 +31,7 @@ load('freq cluster.mat'); %d
 dc = round(d(3:5:end),-2);
 Adqc_big = NaN(30, 3); %entries, freqs
 Adqc2 = NaN(34, 3); %entries, freqs
-Adqc_big_su = NaN(length(names),50, 3); %subjects x entries, freqs
+Adqc_big_su = NaN(length(names),5000, 3); %subjects x entries, freqs
 
 
 al = 0; %counter
@@ -69,7 +69,7 @@ meanqc = mean(Adqc_big, 'omitnan')
 meanqc2 = mean(Adqc2, 'omitnan')
 stdqc = std(reshape(Adqc_big,1,[]), 'omitnan')
 stdqc2 = std(reshape(Adqc2,1,[]), 'omitnan')
-
+%
 y_lim = [-15 15];
 figure('Name', 'BigN')
 boxplot(Adqc_big,round(ds([1,2,4]),-2),'notch','on')
@@ -96,7 +96,7 @@ ylim(y_lim);
 
 figure()
 ala = NaN(6,length(names));
-sala = NaN(150,length(names));
+sala = NaN(15000,length(names));
 for i = 1:length(names)
     sala(:,i) = reshape(Adqc_big_su(i,:,:),[],1);
     ala(:,i) = reshape(Adqc2(2*i-1:2*i,:),[],1);

@@ -3,13 +3,13 @@
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R','34','35'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
 sex = [1,1,1,1,1,...
     0,0,0,0,1,...
     1,1,1,1,1,...
-    1,0]; %1 - female
+    1,0,0,1]; %1 - female
 ear_sex = [1,1,1,1,1,1,1,1,1,1,...
     0,0,0,0,0,0,0,0,1,1,...
     1,1,1,1,1,1,1,1,1,1,...
@@ -21,9 +21,9 @@ snr_value = 9; sndiff = 6;
 name_idx = 1; 
 
 %% initialising empty vectors
-OAE_quick = NaN(length(names),2, 4, 7); %subjects x ears x freqs x trials
-OAE_cluster = NaN(length(names),2, 5, 7); %subjects x ears x freqs x trials
-OAE_dp = NaN(length(names),2, 6, 7); %subjects x ears x freqs x trials
+OAE_quick = NaN(length(names),2, 4, 17); %subjects x ears x freqs x trials
+OAE_cluster = NaN(length(names),2, 5, 17); %subjects x ears x freqs x trials
+OAE_dp = NaN(length(names),2, 6, 17); %subjects x ears x freqs x trials
 
 
 %% OAE analysis
@@ -55,16 +55,19 @@ for name_idx = 1:length(names)
 end
 save(['2OAE' num2str(name_idx) 'osob' option '.mat'],...
     'OAE_dp','OAE_cluster','OAE_quick');
+load(['times_d_' num2str(length(names)) 'osobclean.mat', times_dp]
 
-cl = NaN(4,5);
-qu = NaN(4,4);
-dp = NaN(4,6);
+cl = NaN(5,5);
+qu = NaN(5,4);
+dp = NaN(5,6);
 for i=1:6 %careful! the frequencies are in descending order!
     dat = reshape(OAE_dp(:,:, i,:),1,[]);
     dp(1,i) = min(dat);
     dp(2,i) = max(dat);
     dp(3,i) = mean(dat,'omitnan');
     dp(4,i) = std(dat, 'omitnan');
+    dp(5,i) = sum(~isnan(dat));
+
 end
 for i=1:5
     dat = reshape(OAE_cluster(:,:, i,:),1,[]);
@@ -72,6 +75,7 @@ for i=1:5
     cl(2,i) = max(dat);
     cl(3,i) = mean(dat,'omitnan');
     cl(4,i) = std(dat, 'omitnan');
+    cl(5,i) = sum(~isnan(dat));
 end
 for i=1:4
     dat = reshape(OAE_quick(:,:, i,:),1,[]);
@@ -79,6 +83,7 @@ for i=1:4
     qu(2,i) = max(dat);
     qu(3,i) = mean(dat,'omitnan');
     qu(4,i) = std(dat, 'omitnan');
+    qu(5,i) = sum(~isnan(dat));
 end
 %[mu,muerr,N,std,min,max,meanci] =grpstats(reshape(OAE_quick(:,:, 1,:),1,[]),[],...
 %    {'mean','sem','numel','std','min','max','meanci'});
