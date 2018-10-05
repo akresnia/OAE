@@ -3,17 +3,17 @@
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R','Michal_Cieslak','Ola_Lodyga'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
 flagB = 0;
 if flagB
     names = names2;
     load('B_times_q_l.mat') %times sfl (long), times sfs (short)
-    load('B_OAE4osobclean.mat')
+    load(['B_OAE' num2str(length(names)) 'osobclean.mat'])
 else
-    load('times_q_l.mat') %times sfl (long), times sfs (short)
-load('2OAE17osobclean.mat')
+    load(['times_q_cl'  num2str(length(names)) 'osobclean.mat']) %times sfl (long), times sfs (short)
+    load(['2OAE' num2str(length(names)) 'osobclean.mat'])
 end
 
 %jest jeszcze zmierzona Klaudia_W, ale u niej zla aud. imped.
@@ -96,10 +96,13 @@ end
 save(['testretest_cluster_' num2str(length(names)) 'osobclean.mat'], 'multifit_diff', 'singlefit_diff')
 single_all = reshape(singlefit_diff,1,[]);
 N_sf = sum(~isnan(single_all))
-mean_sf = mean(abs(single_all),'omitnan')
-std_sf = std(abs(single_all),'omitnan')
+mean_sf = mean((single_all),'omitnan')
+std_sf = std((single_all),'omitnan')
+mean_pms = std_sf./sqrt(N_sf)
+
 
 multiple_all = reshape(multifit_diff,1,[]);
 N_mf = sum(~isnan(multiple_all))
-mean_mf = mean(abs(multiple_all),'omitnan')
-std_mf = std(abs(multiple_all),'omitnan')
+mean_mf = mean((multiple_all),'omitnan')
+std_mf = std((multiple_all),'omitnan')
+mean_pmm = std_mf./sqrt(N_mf)

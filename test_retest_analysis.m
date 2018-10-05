@@ -3,10 +3,10 @@
 names = {'Kasia_K','Magda_P','Ewa_K','Agnieszka_K','Krystyna',...
     'Jan_M', 'Mikolaj_M','Michal_P','Krzysztof_B','Justyna_G',...
     'Alicja_K','Joanna_K','Joanna_R', 'Kasia_P','Monika_W',...
-    'Teresa_B', 'Jedrzej_R'
+    'Teresa_B', 'Jedrzej_R', 'Michal_Cieslak','Ola_Lodyga'
     };
 names2 = {'Alicja_B','Ula_M', 'Urszula_O', 'Jan_B'};
-flagB = 1;
+flagB = 0;
 if flagB
     names = names2;
 end
